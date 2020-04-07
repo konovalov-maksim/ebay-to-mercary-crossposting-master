@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gui.MercariLoginController"
+            prefHeight="800.0" prefWidth="800.0">
+    <WebView fx:id="mainWv"
+             AnchorPane.bottomAnchor="0"
+             AnchorPane.leftAnchor="0"
+             AnchorPane.rightAnchor="0"
+             AnchorPane.topAnchor="0"/>
+</AnchorPane>

@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
 <SplitPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="gui.MainController"
            prefHeight="600.0" prefWidth="800.0"
            orientation="VERTICAL"
            dividerPositions="0.3, 0.8" styleClass="padding-pane">
-
+    <VBox>
+        <Button text="Login in Mercari" onAction="#openLoginStage"/>
+    </VBox>
     <TableView fx:id="table">
         <columns>
             <TableColumn fx:id="idCol" text="Item ID"/>
             <TableColumn fx:id="titleCol" text="Title"/>
+            <TableColumn fx:id="descriptionCol" text="Description"/>
+            <TableColumn fx:id="priceCol" text="Price"/>
         </columns>
     </TableView>
     <TextArea fx:id="consoleTa" editable="false" styleClass="console"/>
