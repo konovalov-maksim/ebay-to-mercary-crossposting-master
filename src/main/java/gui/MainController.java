@@ -1,8 +1,8 @@
 package gui;
 
 import core.Item;
-import core.Logger;
-import core.ItemsUploader;
+import core.mercariUploader.Logger;
+import core.mercariUploader.ItemsUploader;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

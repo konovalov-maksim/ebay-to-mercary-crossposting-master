@@ -1,9 +1,10 @@
-package core;
+package core.mercariUploader;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import core.pojo.UploadItemRequestBody;
+import core.Item;
+import core.mercariUploader.pojo.UploadItemRequestBody;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 

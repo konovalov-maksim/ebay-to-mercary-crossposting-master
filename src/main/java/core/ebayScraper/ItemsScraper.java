@@ -1,11 +1,13 @@
-package core;
+package core.ebayScraper;
+
+import core.Item;
 
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class EbayScraper {
+public class ItemsScraper {
 
     private final long timeout = 10000;
     private final String TOKEN;
@@ -16,7 +18,7 @@ public class EbayScraper {
 
     private List<Item> items = new ArrayList<>();
 
-    public EbayScraper(String TOKEN) {
+    public ItemsScraper(String TOKEN) {
         this.TOKEN = TOKEN;
     }
 
