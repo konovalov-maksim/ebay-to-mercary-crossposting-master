@@ -26,7 +26,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class MainController implements Initializable, Logger {
+public class MainController implements Initializable, Logger, ItemsUploader.UploadingListener {
 
     @FXML private TableView<Item> table;
     @FXML private TextArea consoleTa;
@@ -34,6 +34,7 @@ public class MainController implements Initializable, Logger {
     @FXML private TableColumn<Item, String> titleCol;
     @FXML private TableColumn<Item, String> descriptionCol;
     @FXML private TableColumn<Item, Double> priceCol;
+    @FXML private TableColumn<Item, String> statusCol;
 
 
     private ObservableList<Item> items = FXCollections.observableArrayList();
@@ -43,6 +44,7 @@ public class MainController implements Initializable, Logger {
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         items.addAll(getDebugItems());
         table.setItems(items);
     }
@@ -52,6 +54,7 @@ public class MainController implements Initializable, Logger {
         ItemsUploader uploader = new ItemsUploader();
         uploader.setItems(items);
         uploader.setLogger(this);
+        uploader.setUploadingListener(this);
         uploader.setCookies(getDebugCookies());
         uploader.setZipCode("55309");
         //uploader.isLoggedIn();
@@ -101,7 +104,7 @@ public class MainController implements Initializable, Logger {
         item1.setConditionId(2);
         item1.setCategoryId(391);
         item1.setTags(Arrays.asList("belts", "accessory"));
-        item1.setImages(getDebugImages());
+        item1.setImages(getDebugImages1());
 
         Item item2 = new Item("2345");
         item2.setTitle("Women's belt");
@@ -110,15 +113,23 @@ public class MainController implements Initializable, Logger {
         item2.setConditionId(2);
         item2.setCategoryId(391);
         item2.setTags(Arrays.asList("belts", "accessory"));
+        item2.setImages(getDebugImages2());
         items.add(item1);
-//        items.add(item2);
+        items.add(item2);
         return items;
     }
 
-    private List<File> getDebugImages() {
+    private List<File> getDebugImages1() {
         List<File> images = new ArrayList<>();
         images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\1.jpg"));
-        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\2.png"));
+        return images;
+    }
+
+    private List<File> getDebugImages2() {
+        List<File> images = new ArrayList<>();
+        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\2.jpg"));
+        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\3.jpg"));
+        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\4.jpg"));
         return images;
     }
 
@@ -149,5 +160,15 @@ public class MainController implements Initializable, Logger {
         cookies.add(cookie3);
         cookies.add(cookie4);
         return cookies;
+    }
+
+    @Override
+    public void onItemUploaded(Item item) {
+        table.refresh();
+    }
+
+    @Override
+    public void onAllItemsUploaded() {
+        log("--- Items uploading to Mercari completed ---");
     }
 }

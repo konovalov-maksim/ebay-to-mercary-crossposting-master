@@ -18,6 +18,7 @@
             <TableColumn fx:id="titleCol" text="Title"/>
             <TableColumn fx:id="descriptionCol" text="Description"/>
             <TableColumn fx:id="priceCol" text="Price"/>
+            <TableColumn fx:id="statusCol" text="Status"/>
         </columns>
     </TableView>
     <TextArea fx:id="consoleTa" editable="false" styleClass="console"/>

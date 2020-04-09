@@ -2,11 +2,14 @@ package core;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import core.pojo.UploadItemRequestBody;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,8 +22,8 @@ public class ItemsUploader implements Runnable{
     private List<Cookie> cookies;
     private OkHttpClient client;
     private Headers headers;
-    private int delaySec = 2;
     private Logger logger;
+    private UploadingListener uploadingListener;
     private Boolean isLoggedIn;
     private ImagesUploader imagesUploader;
     private String zipCode;
@@ -44,7 +47,6 @@ public class ItemsUploader implements Runnable{
                 continue;
             }
             RequestBody requestBody = getRequestBody(item, imagesIds);
-
             Request request = new Request.Builder()
                     .url("https://www.mercari.com/v1/api")
                     .post(requestBody)
@@ -54,12 +56,37 @@ public class ItemsUploader implements Runnable{
                 Response response = client.newCall(request).execute();
                 String responseBody = response.peekBody(Long.MAX_VALUE).string();
                 System.out.println(responseBody);
+                String uploadingStatus = getStatus(responseBody);
+                item.setStatus(uploadingStatus);
+                uploadingListener.onItemUploaded(item);
             } catch (IOException e) {
                 e.printStackTrace();
                 log(item + " - uploading failed");
-                item.setStatus("Uploading failed");
+                item.setStatus("Uploading error");
             }
+        }
+        uploadingListener.onAllItemsUploaded();
+    }
 
+    private String getStatus(String responseBody) {
+        JsonObject root = new Gson().fromJson(responseBody, JsonObject.class);
+        try {
+            if (root.has("data")) {
+                String id = root
+                        .get("data").getAsJsonObject()
+                        .get("createListing").getAsJsonObject()
+                        .get("id").getAsString();
+                return "Successfully uploaded. ID " + id;
+            } else {
+                String message = root
+                        .get("errors").getAsJsonArray()
+                        .get(0).getAsJsonObject()
+                        .get("message").getAsString();
+                return "Uploading error: " + message;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Uploading error";
         }
     }
 
@@ -70,7 +97,6 @@ public class ItemsUploader implements Runnable{
         System.out.println(requestBodyJson);
         return RequestBody.create(requestBodyJson, JSON);
     }
-
 
 
     public boolean isLoggedIn() {
@@ -88,14 +114,6 @@ public class ItemsUploader implements Runnable{
         return isLoggedIn;
     }
 
-    private void onItemUploaded() {
-
-    }
-
-    private void onAllItemsUploaded() {
-
-    }
-
     private void initClient() {
         CookieJar cookieJar = new CookieJar() {
             @Override
@@ -109,8 +127,10 @@ public class ItemsUploader implements Runnable{
                 return cookies;
             }
         };
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.41.71.199", 3128));
         client = new OkHttpClient.Builder()
                 .cookieJar(cookieJar)
+                .proxy(proxy)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .build();
         imagesUploader = new ImagesUploader(client);
@@ -122,6 +142,11 @@ public class ItemsUploader implements Runnable{
                 .add("Referer", "https://www.mercari.com/sell/")
                 .add("Origin", "https://www.mercari.com")
                 .build();
+    }
+
+    public interface UploadingListener {
+        void onAllItemsUploaded();
+        void onItemUploaded(Item item);
     }
 
     private void log(String message) {
@@ -159,6 +184,14 @@ public class ItemsUploader implements Runnable{
     public void setLogger(Logger logger) {
         this.logger = logger;
         imagesUploader.setLogger(logger);
+    }
+
+    public UploadingListener getUploadingListener() {
+        return uploadingListener;
+    }
+
+    public void setUploadingListener(UploadingListener uploadingListener) {
+        this.uploadingListener = uploadingListener;
     }
 
 }
