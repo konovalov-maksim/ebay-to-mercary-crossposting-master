@@ -1,6 +1,7 @@
 package gui;
 
 import core.Item;
+import core.ebayLoader.ItemsLoader;
 import core.mercariUploader.Logger;
 import core.mercariUploader.ItemsUploader;
 import javafx.application.Platform;
@@ -23,6 +24,8 @@ import okhttp3.Cookie;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -47,6 +50,20 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         items.addAll(getDebugItems());
         table.setItems(items);
+    }
+
+    @FXML
+    private void loadItems() {
+        try {
+            ItemsLoader itemsLoader = new ItemsLoader("MaksimKo-agregato-PRD-5388a6d5f-1b894369");
+            itemsLoader.setLogger(this);
+            List<String> itemsIds = Files.readAllLines(Paths.get("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\items.txt"));
+            itemsLoader.setItemsIds(itemsIds);
+            Thread uploaderThread = new Thread(itemsLoader);
+            uploaderThread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

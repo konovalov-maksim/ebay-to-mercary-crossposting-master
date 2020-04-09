@@ -11,6 +11,7 @@
     <VBox>
         <Button text="Login in Mercari" onAction="#openLoginStage"/>
         <Button text="Upload items to Mercari" onAction="#uploadItems"/>
+        <Button text="Load items from Ebay" onAction="#loadItems"/>
     </VBox>
     <TableView fx:id="table">
         <columns>
