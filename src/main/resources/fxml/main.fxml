@@ -10,6 +10,7 @@
            dividerPositions="0.3, 0.8" styleClass="padding-pane">
     <VBox>
         <Button text="Login in Mercari" onAction="#openLoginStage"/>
+        <Button text="Upload items to Mercari" onAction="#uploadItems"/>
     </VBox>
     <TableView fx:id="table">
         <columns>

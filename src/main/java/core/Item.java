@@ -20,6 +20,8 @@ public class Item {
 
     private List<String> tags = new ArrayList<>();
 
+    private String status;
+
     public Item(String id) {
         this.id = id;
     }
@@ -70,6 +72,18 @@ public class Item {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
