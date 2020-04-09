@@ -53,7 +53,8 @@ public class MainController implements Initializable, Logger {
         uploader.setItems(items);
         uploader.setLogger(this);
         uploader.setCookies(getDebugCookies());
-        uploader.isLoggedIn();
+        uploader.setZipCode("55309");
+        //uploader.isLoggedIn();
         Thread uploaderThread = new Thread(uploader);
         uploaderThread.start();
     }
@@ -79,7 +80,7 @@ public class MainController implements Initializable, Logger {
     public void log(String message) {
         String curTime = new SimpleDateFormat("MM/dd/yyyy  HH:mm:ss:SSS").format(new Date());
         Platform.runLater(() -> {
-            consoleTa.setText(consoleTa.getText() + curTime + "     " + consoleTa + "\n");
+            consoleTa.setText(consoleTa.getText() + curTime + "     " + message + "\n");
             consoleTa.positionCaret(consoleTa.getLength());
         });
     }
@@ -96,18 +97,21 @@ public class MainController implements Initializable, Logger {
         Item item1 = new Item("123345");
         item1.setTitle("Men's belt");
         item1.setDescription("Amazing men's belt");
-        item1.setPrice(15.12);
+        item1.setPrice(15);
+        item1.setConditionId(2);
+        item1.setCategoryId(391);
         item1.setTags(Arrays.asList("belts", "accessory"));
-        item1.setImages(Collections.singletonList(new File("/images/1.jpg")));
+        item1.setImages(getDebugImages());
 
         Item item2 = new Item("2345");
         item2.setTitle("Women's belt");
         item2.setDescription("Amazing women's belt");
-        item2.setPrice(10.0);
+        item2.setPrice(10);
+        item2.setConditionId(2);
+        item2.setCategoryId(391);
         item2.setTags(Arrays.asList("belts", "accessory"));
-
         items.add(item1);
-        items.add(item2);
+//        items.add(item2);
         return items;
     }
 

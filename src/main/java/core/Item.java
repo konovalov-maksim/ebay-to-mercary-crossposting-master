@@ -12,7 +12,9 @@ public class Item {
 
     private String description;
 
-    private Double price;
+    private Double ebayPrice;
+
+    private Integer price;
 
     private List<String> imagesUrls = new ArrayList<>();
 
@@ -20,10 +22,19 @@ public class Item {
 
     private List<String> tags = new ArrayList<>();
 
+    private Integer categoryId;
+
+    private int conditionId;
+
     private String status;
 
     public Item(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return id + " - " + (title != null ? title : "Unnamed item");
     }
 
     public String getTitle() {
@@ -42,12 +53,12 @@ public class Item {
         this.description = description;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getEbayPrice() {
+        return ebayPrice;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setEbayPrice(Double ebayPrice) {
+        this.ebayPrice = ebayPrice;
     }
 
     public List<String> getImagesUrls() {
@@ -86,8 +97,28 @@ public class Item {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return id + " - " + (title != null ? title : "Unnamed item");
+    public Integer getCategoryId() {
+        return categoryId;
     }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public int getConditionId() {
+        return conditionId;
+    }
+
+    public void setConditionId(int conditionId) {
+        this.conditionId = conditionId;
+    }
+
 }

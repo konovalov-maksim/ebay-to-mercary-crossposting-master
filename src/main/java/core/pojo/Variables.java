@@ -8,8 +8,8 @@ import java.util.List;
 
 public class Variables {
 
-    public Variables(Item item, List<String> imagesIds) {
-        this.input = new Input(item, imagesIds);
+    public Variables(Item item, List<String> imagesIds, String zipCode) {
+        this.input = new Input(item, imagesIds, zipCode);
     }
 
     @SerializedName("input")

@@ -23,6 +23,7 @@ public class ItemsUploader implements Runnable{
     private Logger logger;
     private Boolean isLoggedIn;
     private ImagesUploader imagesUploader;
+    private String zipCode;
 
     public ItemsUploader() {
         initClient();
@@ -40,15 +41,30 @@ public class ItemsUploader implements Runnable{
             if (imagesIds.isEmpty()) {
                 log("No images uploaded for item " + item);
                 item.setStatus("Uploading error: no uploaded images");
+                continue;
             }
             RequestBody requestBody = getRequestBody(item, imagesIds);
 
+            Request request = new Request.Builder()
+                    .url("https://www.mercari.com/v1/api")
+                    .post(requestBody)
+                    .headers(headers)
+                    .build();
+            try {
+                Response response = client.newCall(request).execute();
+                String responseBody = response.peekBody(Long.MAX_VALUE).string();
+                System.out.println(responseBody);
+            } catch (IOException e) {
+                e.printStackTrace();
+                log(item + " - uploading failed");
+                item.setStatus("Uploading failed");
+            }
 
         }
     }
 
     private RequestBody getRequestBody(Item item, List<String> imagesIds) {
-        UploadItemRequestBody uploadItemRequestBody = new UploadItemRequestBody(item, imagesIds);
+        UploadItemRequestBody uploadItemRequestBody = new UploadItemRequestBody(item, imagesIds, zipCode);
         Gson gson = new GsonBuilder().create();
         String requestBodyJson = gson.toJson(uploadItemRequestBody);
         System.out.println(requestBodyJson);
@@ -102,13 +118,22 @@ public class ItemsUploader implements Runnable{
                 .add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0")
                 .add("Accept", "*/*")
                 .add("Host", "www.mercari.com")
-                .add("content-type", "application/json")
-                .add("Referer", "https://www.mercari.com/")
+                .add("Content-type", "application/json")
+                .add("Referer", "https://www.mercari.com/sell/")
+                .add("Origin", "https://www.mercari.com")
                 .build();
     }
 
     private void log(String message) {
         if (logger != null) logger.log(message);
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public List<Item> getItems() {

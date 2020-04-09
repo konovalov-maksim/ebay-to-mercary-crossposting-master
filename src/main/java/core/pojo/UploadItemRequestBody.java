@@ -8,12 +8,12 @@ import java.util.List;
 
 public class UploadItemRequestBody {
 
-    public UploadItemRequestBody(Item item, List<String> imagesIds) {
-        this.variables = new Variables(item, imagesIds);
+    public UploadItemRequestBody(Item item, List<String> imagesIds, String zipCode) {
+        this.variables = new Variables(item, imagesIds, zipCode);
         this.operationName = "createListing";
-        this.query = "mutation createListing($input: CreateListingInput!) {\\n  createListing(input: $input) " +
-                "{\\n    id\\n    seller {\\n      id\\n      numSellItems\\n      __typename\\n    }" +
-                "\\n    __typename\\n  }\\n}\\n";
+        this.query = "mutation createListing($input: CreateListingInput!) {\n  createListing(input: $input) " +
+                "{\n    id\n    seller {\n      id\n      numSellItems\n      __typename\n    }" +
+                "\n    __typename\n  }\n}\n";
     }
 
     @SerializedName("operationName")
