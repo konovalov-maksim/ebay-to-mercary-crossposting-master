@@ -1,4 +1,4 @@
-package core.mercariUploader;
+package core;
 
 public interface Logger {
     public void log(String message);

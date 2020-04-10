@@ -2,7 +2,8 @@ package gui;
 
 import core.Item;
 import core.ebayLoader.ItemsLoader;
-import core.mercariUploader.Logger;
+import core.Logger;
+import core.ebayLoader.LoadingListener;
 import core.mercariUploader.ItemsUploader;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -25,11 +26,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class MainController implements Initializable, Logger, ItemsUploader.UploadingListener {
+public class MainController implements Initializable, Logger, ItemsUploader.UploadingListener, LoadingListener {
 
     @FXML private TableView<Item> table;
     @FXML private TextArea consoleTa;
@@ -55,8 +57,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML
     private void loadItems() {
         try {
-            ItemsLoader itemsLoader = new ItemsLoader("MaksimKo-agregato-PRD-5388a6d5f-1b894369");
+            String token = "MaksimKo-agregato-PRD-5388a6d5f-1b894369";
+            Path imagesDirPath = Paths.get("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images");
+            ItemsLoader itemsLoader = new ItemsLoader(token);
+            itemsLoader.setImagesDirPath(imagesDirPath);
             itemsLoader.setLogger(this);
+            itemsLoader.setLoadingListener(this);
             List<String> itemsIds = Files.readAllLines(Paths.get("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\items.txt"));
             itemsLoader.setItemsIds(itemsIds);
             Thread uploaderThread = new Thread(itemsLoader);
@@ -187,5 +193,20 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @Override
     public void onAllItemsUploaded() {
         log("--- Items uploading to Mercari completed ---");
+    }
+
+    @Override
+    public void onItemInfoLoaded(Item item) {
+        items.add(item);
+    }
+
+    @Override
+    public void onItemImagesLoaded(Item item) {
+        table.refresh();
+    }
+
+    @Override
+    public void onAllItemsLoaded() {
+        log("--- Items loading from Ebay completed ---");
     }
 }

@@ -2,15 +2,17 @@ package core.ebayLoader;
 
 import com.google.gson.Gson;
 import core.Item;
+import core.Logger;
 import core.ebayLoader.pojo.EbayItem;
 import core.ebayLoader.pojo.EbayResponse;
-import core.mercariUploader.Logger;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -19,14 +21,14 @@ public class ItemsLoader implements Runnable {
 
     private final String TOKEN;
     private Logger logger;
-    private boolean isRunning = false;
     private List<HttpUrl> requestUrls;
     private List<Item> items = new ArrayList<>();
+    private LoadingListener loadingListener;
 
     private OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .build();
-
+    private Path path;
 
     public ItemsLoader(String TOKEN) {
         this.TOKEN = TOKEN;
@@ -54,6 +56,7 @@ public class ItemsLoader implements Runnable {
                 log("Items loading error");
             }
         }
+        loadingListener.onAllItemsLoaded();
     }
 
     private void extractItems(String responseBody) {
@@ -61,7 +64,16 @@ public class ItemsLoader implements Runnable {
             EbayResponse response = new Gson().fromJson(responseBody, EbayResponse.class);
             List<EbayItem> ebayItems = response.getEbayItems();
             for (EbayItem ebayItem : ebayItems) {
-
+                Item item = convertEbayItem(ebayItem);
+                items.add(item);
+                if (!item.getImagesUrls().isEmpty()) {
+                    ImagesLoader imagesLoader = new ImagesLoader(client, item, path);
+                    imagesLoader.setLoadingListener(loadingListener);
+                    imagesLoader.loadImages();
+                    loadingListener.onItemInfoLoaded(item);
+                } else {
+                    item.setStatus("Item info loading complete. No images found");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,6 +81,18 @@ public class ItemsLoader implements Runnable {
         }
     }
 
+    private Item convertEbayItem(EbayItem ebayItem) {
+        Item item = new Item();
+        item.setId(ebayItem.getItemID());
+        item.setTitle(ebayItem.getTitle());
+        item.setImagesUrls(ebayItem.getPictureURL());
+        Double ebayPrice = ebayItem.getConvertedCurrentPrice().getValue();
+        item.setEbayPrice(ebayPrice);
+        item.setPrice((int) Math.round(ebayPrice));
+        String description = Jsoup.parse(ebayItem.getDescription()).text();
+        item.setDescription(description);
+        return item;
+    }
 
     private List<HttpUrl> getRequestUrls(List<String> itemsIds) {
         List<HttpUrl> requestUrls = new ArrayList<>();
@@ -91,6 +115,7 @@ public class ItemsLoader implements Runnable {
                 .addQueryParameter("appid", TOKEN)
                 .addQueryParameter("siteid", "0")
                 .addQueryParameter("version", "967")
+                .addQueryParameter("includeSelector", "Description")
                 .addQueryParameter("ItemID", itemsIdsCommaSep)
                 .build();
     }
@@ -105,5 +130,21 @@ public class ItemsLoader implements Runnable {
 
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void setImagesDirPath(Path path) {
+        this.path = path;
+    }
+
+    public LoadingListener getLoadingListener() {
+        return loadingListener;
+    }
+
+    public void setLoadingListener(LoadingListener loadingListener) {
+        this.loadingListener = loadingListener;
     }
 }

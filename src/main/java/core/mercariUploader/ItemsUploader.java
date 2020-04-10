@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import core.Item;
+import core.Logger;
 import core.mercariUploader.pojo.UploadItemRequestBody;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;

@@ -6,27 +6,20 @@ import java.util.List;
 
 public class Item {
 
-    private final String id;
-
+    private String id;
     private String title;
-
     private String description;
-
     private Double ebayPrice;
-
     private Integer price;
-
     private List<String> imagesUrls = new ArrayList<>();
-
     private List<File> images = new ArrayList<>();
-
     private List<String> tags = new ArrayList<>();
-
     private Integer categoryId;
-
     private int conditionId;
-
     private String status;
+
+    public Item() {
+    }
 
     public Item(String id) {
         this.id = id;
@@ -35,6 +28,10 @@ public class Item {
     @Override
     public String toString() {
         return id + " - " + (title != null ? title : "Unnamed item");
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {

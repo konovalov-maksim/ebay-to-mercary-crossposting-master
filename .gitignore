@@ -1,6 +1,5 @@
 /.idea
 /target
 /images
-/settings.txt
-/items.txt
+*.txt
 *.iml
