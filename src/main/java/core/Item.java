@@ -119,8 +119,8 @@ public class Item {
         this.images = images;
     }
 
-    public String[] getTags() {
-        return tags;
+    public List<String> getTags() {
+        return Arrays.stream(tags).filter(t -> t != null && !t.isEmpty()).collect(Collectors.toList());
     }
 
     public String getId() {
@@ -141,6 +141,30 @@ public class Item {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    public String getTag0() {
+        return tags[0];
+    }
+
+    public void setTag0(String value) {
+        tags[0] = value;
+    }
+
+    public String getTag1() {
+        return tags[1];
+    }
+
+    public void setTag1(String value) {
+        tags[1] = value;
+    }
+
+    public String getTag2() {
+        return tags[2];
+    }
+
+    public void setTag2(String value) {
+        tags[2] = value;
     }
 
 }

@@ -132,9 +132,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             categoryItem.getParent().setExpanded(true);
         }
 
-        tag0Tf.setText(item.getTags().length > 0 ? item.getTags()[0] : "");
-        tag1Tf.setText(item.getTags().length > 1 ? item.getTags()[1] : "");
-        tag2Tf.setText(item.getTags().length > 2 ? item.getTags()[2] : "");
+        tag0Tf.setText(item.getTag0());
+        tag1Tf.setText(item.getTag1());
+        tag2Tf.setText(item.getTag2());
 
         for (File file : item.getImages()) {
             try (InputStream imageIs = new FileInputStream(file) ) {
@@ -159,9 +159,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         selectedItem.setTitle(titleTf.getText());
         selectedItem.setDescription(descriptionTa.getText());
         TreeItem<Category> categoryItem = categoriesTv.getSelectionModel().getSelectedItem();
-        selectedItem.getTags()[0] = tag0Tf.getText();
-        selectedItem.getTags()[1] = tag1Tf.getText();
-        selectedItem.getTags()[2] = tag2Tf.getText();
+        selectedItem.setTag0(tag0Tf.getText());
+        selectedItem.setTag1(tag1Tf.getText());
+        selectedItem.setTag2(tag2Tf.getText());
         if (categoryItem != null) selectedItem.setCategory(categoryItem.getValue());
         try {
             selectedItem.setPrice(Integer.valueOf(priceTf.getText()));
@@ -211,15 +211,15 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         item1.setDescription("Amazing men's belt");
         item1.setPrice(15);
         item1.setCondition(new Condition(1));
-        item1.getTags()[0] = "Belts";
+        item1.setTag0("Belts");
         item1.setImages(getDebugImages1());
 
         Item item2 = new Item("2345");
         item2.setTitle("Women's belt");
         item2.setDescription("Amazing women's belt");
         item2.setPrice(10);
-        item1.getTags()[0] = "accessory";
-        item1.setCondition(new Condition(3));
+        item2.setTag1("accessory");
+        item2.setCondition(new Condition(3));
         item2.setImages(getDebugImages2());
         items.add(item1);
         items.add(item2);
