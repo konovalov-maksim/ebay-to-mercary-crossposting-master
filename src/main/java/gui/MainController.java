@@ -39,6 +39,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private HBox imagesHb;
     @FXML private TextField titleTf;
     @FXML private TextField priceTf;
+    @FXML private TextField tag0Tf;
+    @FXML private TextField tag1Tf;
+    @FXML private TextField tag2Tf;
     @FXML private TextArea descriptionTa;
     @FXML private ComboBox<Condition> conditionCb;
     @FXML private TreeView<Category> categoriesTv;
@@ -51,7 +54,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private TableColumn<Item, String> descriptionCol;
     @FXML private TableColumn<Item, String> categoryCol;
     @FXML private TableColumn<Item, String> conditionCol;
-    @FXML private TableColumn<Item, Double> priceCol;
+    @FXML private TableColumn<Item, Double> ebayPriceCol;
+    @FXML private TableColumn<Item, Integer> priceCol;
+    @FXML private TableColumn<Item, String> tagsCol;
     @FXML private TableColumn<Item, Integer> imagesNumCol;
     @FXML private TableColumn<Item, String> statusCol;
 
@@ -61,12 +66,13 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     private ObservableList<Item> items = FXCollections.observableArrayList();
 
     public void initialize(URL location, ResourceBundle resources) {
-
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
         conditionCol.setCellValueFactory(new PropertyValueFactory<>("conditionName"));
+        ebayPriceCol.setCellValueFactory(new PropertyValueFactory<>("ebayPriceCol"));
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+        tagsCol.setCellValueFactory(new PropertyValueFactory<>("tagsString"));
         imagesNumCol.setCellValueFactory(new PropertyValueFactory<>("imagesNum"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
@@ -126,6 +132,10 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             categoryItem.getParent().setExpanded(true);
         }
 
+        tag0Tf.setText(item.getTags().length > 0 ? item.getTags()[0] : "");
+        tag1Tf.setText(item.getTags().length > 1 ? item.getTags()[1] : "");
+        tag2Tf.setText(item.getTags().length > 2 ? item.getTags()[2] : "");
+
         for (File file : item.getImages()) {
             try (InputStream imageIs = new FileInputStream(file) ) {
                 Image image = new Image(imageIs);
@@ -148,7 +158,11 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         selectedItem.setCondition(conditionCb.getValue());
         selectedItem.setTitle(titleTf.getText());
         selectedItem.setDescription(descriptionTa.getText());
-        selectedItem.setCategory(categoriesTv.getSelectionModel().getSelectedItem().getValue());
+        TreeItem<Category> categoryItem = categoriesTv.getSelectionModel().getSelectedItem();
+        selectedItem.getTags()[0] = tag0Tf.getText();
+        selectedItem.getTags()[1] = tag1Tf.getText();
+        selectedItem.getTags()[2] = tag2Tf.getText();
+        if (categoryItem != null) selectedItem.setCategory(categoryItem.getValue());
         try {
             selectedItem.setPrice(Integer.valueOf(priceTf.getText()));
         } catch (NumberFormatException e) {
@@ -197,15 +211,15 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         item1.setDescription("Amazing men's belt");
         item1.setPrice(15);
         item1.setCondition(new Condition(1));
-        item1.setTags(Arrays.asList("belts", "accessory"));
+        item1.getTags()[0] = "Belts";
         item1.setImages(getDebugImages1());
 
         Item item2 = new Item("2345");
         item2.setTitle("Women's belt");
         item2.setDescription("Amazing women's belt");
         item2.setPrice(10);
+        item1.getTags()[0] = "accessory";
         item1.setCondition(new Condition(3));
-        item2.setTags(Arrays.asList("belts", "accessory"));
         item2.setImages(getDebugImages2());
         items.add(item1);
         items.add(item2);

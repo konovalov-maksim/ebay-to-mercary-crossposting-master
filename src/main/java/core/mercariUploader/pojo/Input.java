@@ -18,7 +18,7 @@ public class Input {
         this.categoryId = item.getCategoryId();
         this.conditionId = item.getConditionId();
         this.zipCode = zipCode;
-        this.tags = item.getTags();
+        this.tags = Arrays.asList(item.getTags());
         this.salesFee = item.getPrice() * 10;
         this.shippingPayerId = 2; //TODO check this value
         this.shippingClassIds = Arrays.asList(0);

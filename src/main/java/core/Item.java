@@ -2,7 +2,10 @@ package core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Item {
 
@@ -13,7 +16,7 @@ public class Item {
     private Integer price;
     private List<String> imagesUrls = new ArrayList<>();
     private List<File> images = new ArrayList<>();
-    private List<String> tags = new ArrayList<>();
+    private String[] tags = new String[]{null, null, null};
     private Condition condition;
     private Category category;
     private String status;
@@ -70,6 +73,12 @@ public class Item {
         this.category = category;
     }
 
+    public String getTagsString() {
+        return tags != null ? Arrays.stream(tags)
+                .filter(t -> t != null && !t.isEmpty())
+                .collect(Collectors.joining(", ")) : "";
+    }
+
     public String getTitle() {
         return title;
     }
@@ -110,12 +119,8 @@ public class Item {
         this.images = images;
     }
 
-    public List<String> getTags() {
+    public String[] getTags() {
         return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
     }
 
     public String getId() {

@@ -24,6 +24,12 @@
                         <TextField fx:id="titleTf"/>
                         <Label text="Description:"/>
                         <TextArea fx:id="descriptionTa"/>
+                        <Label text="Tags"/>
+                        <HBox spacing="5">
+                            <TextField fx:id="tag0Tf"/>
+                            <TextField fx:id="tag1Tf"/>
+                            <TextField fx:id="tag2Tf"/>
+                        </HBox>
                         <HBox spacing="5">
                             <VBox>
                                 <Label text="Condition:"/>
@@ -56,8 +62,10 @@
                 <TableColumn fx:id="descriptionCol" text="Description"/>
                 <TableColumn fx:id="conditionCol" text="Condition"/>
                 <TableColumn fx:id="categoryCol" text="Category"/>
-                <TableColumn fx:id="priceCol" text="Price"/>
-                <TableColumn fx:id="imagesNumCol" text="Images number"/>
+                <TableColumn fx:id="ebayPriceCol" text="Ebay Price" styleClass="number-column"/>
+                <TableColumn fx:id="priceCol" text="Price" styleClass="number-column"/>
+                <TableColumn fx:id="tagsCol" text="tags"/>
+                <TableColumn fx:id="imagesNumCol" text="Images number" styleClass="number-column"/>
                 <TableColumn fx:id="statusCol" text="Status"/>
             </columns>
         </TableView>
