@@ -9,7 +9,7 @@
            orientation="VERTICAL"
            dividerPositions="0.8" styleClass="padding-pane">
     <VBox>
-        <TabPane>
+        <TabPane fx:id="paramsTp">
             <Tab text="General parameters">
                 <VBox styleClass="padding-pane" spacing="5">
                     <Button text="Login in Mercari" onAction="#openLoginStage"/>
@@ -17,8 +17,8 @@
                     <Button text="Load items from Ebay" onAction="#loadItems"/>
                 </VBox>
             </Tab>
-            <Tab fx:id="itemsParamsTab" text="Item parameters">
-                <HBox spacing="5" prefWidth="Infinity" styleClass="vertical-padding-pane">
+            <Tab text="Item parameters">
+                <SplitPane prefWidth="Infinity" dividerPositions="0.2, 0.4">
                     <VBox spacing="5" minWidth="300">
                         <Label text="Title:"/>
                         <TextField fx:id="titleTf"/>
@@ -36,14 +36,17 @@
                         </HBox>
                         <Button onAction="#applyParams" text="Apply"/>
                     </VBox>
-                    <VBox spacing="10">
+                    <VBox spacing="5" minWidth="200">
                         <Label text="Category:"/>
-                        <TreeView fx:id="categoriesTv" minWidth="200"/>
+                        <TreeView fx:id="categoriesTv"/>
                     </VBox>
-                    <ScrollPane HBox.hgrow="ALWAYS">
-                        <HBox fx:id="imagesHb" styleClass="padding-pane" spacing="5"/>
-                    </ScrollPane>
-                </HBox>
+                    <VBox spacing="5">
+                        <Label text="Images"/>
+                        <ScrollPane VBox.vgrow="ALWAYS">
+                            <HBox fx:id="imagesHb" styleClass="padding-pane" spacing="5"/>
+                        </ScrollPane>
+                    </VBox>
+                </SplitPane>
             </Tab>
         </TabPane>
         <TableView fx:id="table">

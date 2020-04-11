@@ -34,14 +34,15 @@ import java.util.*;
 
 public class MainController implements Initializable, Logger, ItemsUploader.UploadingListener, LoadingListener {
 
-    @FXML Tab itemsParamsTab;
+    @FXML private TabPane paramsTp;
+
     @FXML private HBox imagesHb;
     @FXML private TextField titleTf;
     @FXML private TextField priceTf;
     @FXML private TextArea descriptionTa;
     @FXML private ComboBox<Condition> conditionCb;
-
     @FXML private TreeView<Category> categoriesTv;
+
 
     @FXML private TableView<Item> table;
     @FXML private TextArea consoleTa;
@@ -111,6 +112,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     }
 
     private void showItemParams(Item item) {
+        paramsTp.getSelectionModel().select(1);
         titleTf.setText(item.getTitle());
         priceTf.setText(String.valueOf(item.getPrice()));
         descriptionTa.setText(item.getDescription());
