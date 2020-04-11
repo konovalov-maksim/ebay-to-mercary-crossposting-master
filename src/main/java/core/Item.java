@@ -14,8 +14,8 @@ public class Item {
     private List<String> imagesUrls = new ArrayList<>();
     private List<File> images = new ArrayList<>();
     private List<String> tags = new ArrayList<>();
-    private Integer categoryId;
-    private int conditionId;
+    private Condition condition;
+    private Category category;
     private String status;
 
     public Item() {
@@ -32,6 +32,42 @@ public class Item {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public int getImagesNum() {
+        return images != null ? images.size() : 0;
+    }
+
+    public Integer getConditionId() {
+        return condition != null ? condition.getId() : null;
+    }
+
+    public String getConditionName() {
+        return condition != null ? condition.getName() : null;
+    }
+
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    public Integer getCategoryId() {
+        return category != null ? category.getId() : null;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public String getCategoryName() {
+        return category != null ? category.getName() : null;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public String getTitle() {
@@ -94,28 +130,12 @@ public class Item {
         this.status = status;
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
-    }
-
     public Integer getPrice() {
         return price;
     }
 
     public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public int getConditionId() {
-        return conditionId;
-    }
-
-    public void setConditionId(int conditionId) {
-        this.conditionId = conditionId;
     }
 
 }

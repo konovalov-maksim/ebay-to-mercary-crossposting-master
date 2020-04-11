@@ -67,7 +67,8 @@ public class ImagesLoader {
         if (item.getImages().size() + loadingErrors == item.getImagesUrls().size()) {
             if (loadingErrors == 0) item.setStatus("Images downloading complete");
             else  item.setStatus("Images downloading complete with " + loadingErrors + " errors");
-            loadingListener.onItemImagesLoaded(item);
+            if (loadingListener != null)
+                loadingListener.onItemImagesLoaded(item);
         }
     }
 

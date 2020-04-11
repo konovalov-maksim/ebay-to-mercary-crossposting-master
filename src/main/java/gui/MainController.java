@@ -1,8 +1,7 @@
 package gui;
 
-import core.Item;
+import core.*;
 import core.ebayLoader.ItemsLoader;
-import core.Logger;
 import core.ebayLoader.LoadingListener;
 import core.mercariUploader.ItemsUploader;
 import javafx.application.Platform;
@@ -13,17 +12,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import okhttp3.Cookie;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,25 +34,49 @@ import java.util.*;
 
 public class MainController implements Initializable, Logger, ItemsUploader.UploadingListener, LoadingListener {
 
+    @FXML Tab itemsParamsTab;
+    @FXML private HBox imagesHb;
+    @FXML private TextField titleTf;
+    @FXML private TextField priceTf;
+    @FXML private TextArea descriptionTa;
+    @FXML private ComboBox<Condition> conditionCb;
+
+    @FXML private TreeView<Category> categoriesTv;
+
     @FXML private TableView<Item> table;
     @FXML private TextArea consoleTa;
     @FXML private TableColumn<Item, String> idCol;
     @FXML private TableColumn<Item, String> titleCol;
     @FXML private TableColumn<Item, String> descriptionCol;
+    @FXML private TableColumn<Item, String> categoryCol;
+    @FXML private TableColumn<Item, String> conditionCol;
     @FXML private TableColumn<Item, Double> priceCol;
+    @FXML private TableColumn<Item, Integer> imagesNumCol;
     @FXML private TableColumn<Item, String> statusCol;
 
+    private DataReader dataReader = new DataReader();
+    private Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
 
     private ObservableList<Item> items = FXCollections.observableArrayList();
 
     public void initialize(URL location, ResourceBundle resources) {
+
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        conditionCol.setCellValueFactory(new PropertyValueFactory<>("conditionName"));
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+        imagesNumCol.setCellValueFactory(new PropertyValueFactory<>("imagesNum"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         items.addAll(getDebugItems());
         table.setItems(items);
+        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            showItemParams(table.getSelectionModel().getSelectedItem());
+        });
+
+        conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
+        initCategoriesTv();
     }
 
     @FXML
@@ -83,6 +108,51 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         //uploader.isLoggedIn();
         Thread uploaderThread = new Thread(uploader);
         uploaderThread.start();
+    }
+
+    private void showItemParams(Item item) {
+        titleTf.setText(item.getTitle());
+        priceTf.setText(String.valueOf(item.getPrice()));
+        descriptionTa.setText(item.getDescription());
+        imagesHb.getChildren().clear();
+        conditionCb.setValue(item.getCondition());
+
+        TreeItem<Category> categoryItem = categoryItems.get(item.getCategoryId());
+        categoriesTv.getSelectionModel().clearSelection();
+        if (categoryItem != null) {
+            categoriesTv.getSelectionModel().select(categoryItem);
+            categoryItem.getParent().setExpanded(true);
+        }
+
+        for (File file : item.getImages()) {
+            try (InputStream imageIs = new FileInputStream(file) ) {
+                Image image = new Image(imageIs);
+                ImageView imageView = new ImageView(image);
+                imageView.setFitWidth(200);
+                imageView.setPreserveRatio(true);
+                imagesHb.getChildren().add(imageView);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log(item + " - unable to open item image");
+                item.getImages().remove(file);
+            }
+        }
+    }
+
+    @FXML
+    private void applyParams() {
+        Item selectedItem = table.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) return;
+        selectedItem.setCondition(conditionCb.getValue());
+        selectedItem.setTitle(titleTf.getText());
+        selectedItem.setDescription(descriptionTa.getText());
+        selectedItem.setCategory(categoriesTv.getSelectionModel().getSelectedItem().getValue());
+        try {
+            selectedItem.setPrice(Integer.valueOf(priceTf.getText()));
+        } catch (NumberFormatException e) {
+            showErrorAlert("Incorrect Price");
+        }
+        table.refresh();
     }
 
     @FXML
@@ -124,8 +194,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         item1.setTitle("Men's belt");
         item1.setDescription("Amazing men's belt");
         item1.setPrice(15);
-        item1.setConditionId(2);
-        item1.setCategoryId(391);
+        item1.setCondition(new Condition(1));
         item1.setTags(Arrays.asList("belts", "accessory"));
         item1.setImages(getDebugImages1());
 
@@ -133,8 +202,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         item2.setTitle("Women's belt");
         item2.setDescription("Amazing women's belt");
         item2.setPrice(10);
-        item2.setConditionId(2);
-        item2.setCategoryId(391);
+        item1.setCondition(new Condition(3));
         item2.setTags(Arrays.asList("belts", "accessory"));
         item2.setImages(getDebugImages2());
         items.add(item1);
@@ -208,5 +276,42 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @Override
     public void onAllItemsLoaded() {
         log("--- Items loading from Ebay completed ---");
+    }
+
+    private void initCategoriesTv() {
+        try {
+            List<Category> categories = dataReader.getCategories();
+            TreeItem<Category> rootItem = new TreeItem<>(new Category());
+            rootItem.getChildren().addAll(findChildren(null, categories));
+            categoriesTv.setRoot(rootItem);
+            categoriesTv.setShowRoot(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("Unable to load categories list");
+        }
+    }
+
+    private List<TreeItem<Category>> findChildren(Integer categoryId, List<Category> categories) {
+        List<TreeItem<Category>> children = new ArrayList<>();
+        for (int i = 0; i < categories.size(); i++) {
+            Category childCategory = categories.get(i);
+            Integer parentId = childCategory.getParentId();
+            if ((categoryId == null && parentId == null) || (parentId != null && parentId.equals(categoryId))) {
+                TreeItem<Category> childItem = new TreeItem<>(childCategory);
+                children.add(childItem);
+                childItem.getChildren().addAll(findChildren(childCategory.getId(), categories));
+                categoryItems.put(childCategory.getId(), childItem);
+            }
+        }
+        return children;
+    }
+
+    public static void showErrorAlert( String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setGraphic(new ImageView("/images/error.png"));
+        alert.setTitle("Error");
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

@@ -69,6 +69,7 @@ public class ItemsLoader implements Runnable {
                 if (!item.getImagesUrls().isEmpty()) {
                     ImagesLoader imagesLoader = new ImagesLoader(client, item, path);
                     imagesLoader.setLoadingListener(loadingListener);
+                    imagesLoader.setLogger(logger);
                     imagesLoader.loadImages();
                     loadingListener.onItemInfoLoaded(item);
                 } else {

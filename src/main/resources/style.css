@@ -1,9 +1,9 @@
-VBox, HBox {
-    -fx-spacing: 10;
-}
-
 .padding-pane {
     -fx-padding: 10;
+}
+
+.vertical-padding-pane {
+    -fx-padding: 10, 0, 10, 0;
 }
 
 .split-pane {
@@ -20,11 +20,6 @@ VBox, HBox {
     -fx-font-size: 0.9em;
 }
 
-.progress-bar {
-    -fx-min-height: 20;
-    -fx-max-width: Infinity;
-}
-
 .console {
     -fx-font-family: Consolas;
     -fx-text-fill: #555555;
@@ -32,13 +27,4 @@ VBox, HBox {
 
 .number-column {
     -fx-alignment: CENTER-RIGHT;
-}
-
-.control-pane Button {
-    -fx-background-size: 16 16;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: 6 50%;
-    -fx-padding: 6 6 6 28;
-    -fx-min-width: 85;
-    -fx-alignment: CENTER-LEFT;
 }

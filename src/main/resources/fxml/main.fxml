@@ -1,26 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <SplitPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="gui.MainController"
-           prefHeight="600.0" prefWidth="800.0"
+           prefHeight="800.0" prefWidth="1200.0"
            orientation="VERTICAL"
-           dividerPositions="0.3, 0.8" styleClass="padding-pane">
+           dividerPositions="0.8" styleClass="padding-pane">
     <VBox>
-        <Button text="Login in Mercari" onAction="#openLoginStage"/>
-        <Button text="Upload items to Mercari" onAction="#uploadItems"/>
-        <Button text="Load items from Ebay" onAction="#loadItems"/>
+        <TabPane>
+            <Tab text="General parameters">
+                <VBox styleClass="padding-pane" spacing="5">
+                    <Button text="Login in Mercari" onAction="#openLoginStage"/>
+                    <Button text="Upload items to Mercari" onAction="#uploadItems"/>
+                    <Button text="Load items from Ebay" onAction="#loadItems"/>
+                </VBox>
+            </Tab>
+            <Tab fx:id="itemsParamsTab" text="Item parameters">
+                <HBox spacing="5" prefWidth="Infinity" styleClass="vertical-padding-pane">
+                    <VBox spacing="5" minWidth="300">
+                        <Label text="Title:"/>
+                        <TextField fx:id="titleTf"/>
+                        <Label text="Description:"/>
+                        <TextArea fx:id="descriptionTa"/>
+                        <HBox spacing="5">
+                            <VBox>
+                                <Label text="Condition:"/>
+                                <ComboBox fx:id="conditionCb"/>
+                            </VBox>
+                            <VBox>
+                                <Label text="Price:"/>
+                                <TextField fx:id="priceTf"/>
+                            </VBox>
+                        </HBox>
+                        <Button onAction="#applyParams" text="Apply"/>
+                    </VBox>
+                    <VBox spacing="10">
+                        <Label text="Category:"/>
+                        <TreeView fx:id="categoriesTv" minWidth="200"/>
+                    </VBox>
+                    <ScrollPane HBox.hgrow="ALWAYS">
+                        <HBox fx:id="imagesHb" styleClass="padding-pane" spacing="5"/>
+                    </ScrollPane>
+                </HBox>
+            </Tab>
+        </TabPane>
+        <TableView fx:id="table">
+            <columns>
+                <TableColumn fx:id="idCol" text="Item ID"/>
+                <TableColumn fx:id="titleCol" text="Title"/>
+                <TableColumn fx:id="descriptionCol" text="Description"/>
+                <TableColumn fx:id="conditionCol" text="Condition"/>
+                <TableColumn fx:id="categoryCol" text="Category"/>
+                <TableColumn fx:id="priceCol" text="Price"/>
+                <TableColumn fx:id="imagesNumCol" text="Images number"/>
+                <TableColumn fx:id="statusCol" text="Status"/>
+            </columns>
+        </TableView>
     </VBox>
-    <TableView fx:id="table">
-        <columns>
-            <TableColumn fx:id="idCol" text="Item ID"/>
-            <TableColumn fx:id="titleCol" text="Title"/>
-            <TableColumn fx:id="descriptionCol" text="Description"/>
-            <TableColumn fx:id="priceCol" text="Price"/>
-            <TableColumn fx:id="statusCol" text="Status"/>
-        </columns>
-    </TableView>
     <TextArea fx:id="consoleTa" editable="false" styleClass="console"/>
 </SplitPane>
