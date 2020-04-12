@@ -26,15 +26,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MainController implements Initializable, Logger, ItemsUploader.UploadingListener, LoadingListener {
 
-    @FXML private TabPane paramsTp;
+    @FXML private TitledPane itemParamsTp;
 
     @FXML private HBox imagesHb;
     @FXML private TextField titleTf;
@@ -46,6 +45,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private ComboBox<Condition> conditionCb;
     @FXML private TreeView<Category> categoriesTv;
 
+    @FXML private TextField zipCodeTf;
 
     @FXML private TableView<Item> table;
     @FXML private TextArea consoleTa;
@@ -62,11 +62,18 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     private DataReader dataReader = new DataReader();
     private Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
-
     private ObservableList<Item> items = FXCollections.observableArrayList();
 
+    private Settings settings;
+
     public void initialize(URL location, ResourceBundle resources) {
-//        items.addAll(getDebugItems());
+        try {
+            settings = dataReader.loadSettings();
+            zipCodeTf.setText(settings.getZipCode());
+        } catch (IOException e) {
+            e.printStackTrace();
+            log("Default settings not found");
+        }
 
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -90,38 +97,41 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     }
 
     @FXML
-    private void loadItems() {
-        try {
-            String token = "MaksimKo-agregato-PRD-5388a6d5f-1b894369";
-            Path imagesDirPath = Paths.get("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images");
-            ItemsLoader itemsLoader = new ItemsLoader(token);
-            itemsLoader.setImagesDirPath(imagesDirPath);
-            itemsLoader.setLogger(this);
-            itemsLoader.setLoadingListener(this);
-            List<String> itemsIds = Files.readAllLines(Paths.get("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\items.txt"));
-            itemsLoader.setItemsIds(itemsIds);
-            Thread uploaderThread = new Thread(itemsLoader);
-            uploaderThread.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void addItems() {
+        TextAreaDialog dialog = new TextAreaDialog("", "Enter items IDs:","Adding itesm IDs", "");
+        Optional result = dialog.showAndWait();
+        if (result.isPresent()) {
+            List<String> itemsIds = Arrays.stream(((String) result.get()).split("\\r?\\n"))
+                    .distinct()
+                    .collect(Collectors.toList());
+            if (!itemsIds.isEmpty()) loadItems(itemsIds);
         }
+    }
+
+    private void loadItems(List<String> itemsIds) {
+        ItemsLoader itemsLoader = new ItemsLoader(settings.getEbayToken());
+        itemsLoader.setImagesDirPath(Paths.get("").toAbsolutePath().resolve("images"));
+        itemsLoader.setLogger(this);
+        itemsLoader.setLoadingListener(this);
+        itemsLoader.setItemsIds(itemsIds);
+        log("Items loading from Ebay started");
+        new Thread(itemsLoader).start();
     }
 
     @FXML
     private void uploadItems() {
         ItemsUploader uploader = new ItemsUploader();
-        uploader.setItems(items);
         uploader.setLogger(this);
         uploader.setUploadingListener(this);
         uploader.setCookies(getDebugCookies());
-        uploader.setZipCode("55309");
         //uploader.isLoggedIn();
-        Thread uploaderThread = new Thread(uploader);
-        uploaderThread.start();
+        uploader.setItems(items);
+        uploader.setZipCode(settings.getZipCode());
+        new Thread(uploader).start();
     }
 
     private void showItemParams(Item item) {
-        paramsTp.getSelectionModel().select(1);
+        itemParamsTp.setExpanded(true);
         titleTf.setText(item.getTitle());
         priceTf.setText(String.valueOf(item.getPrice()));
         descriptionTa.setText(item.getDescription());
@@ -205,42 +215,6 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         Platform.runLater(() -> {
             consoleTa.setText("");
         });
-    }
-
-    private List<Item> getDebugItems() {
-        List<Item> items = new ArrayList<>();
-        Item item1 = new Item("123345");
-        item1.setTitle("Men's belt");
-        item1.setDescription("Amazing men's belt");
-        item1.setPrice(15);
-        item1.setCondition(new Condition(1));
-        item1.setTag0("Belts");
-        item1.setImages(getDebugImages1());
-
-        Item item2 = new Item("2345");
-        item2.setTitle("Women's belt");
-        item2.setDescription("Amazing women's belt");
-        item2.setPrice(10);
-        item2.setTag1("accessory");
-        item2.setCondition(new Condition(3));
-        item2.setImages(getDebugImages2());
-        items.add(item1);
-        items.add(item2);
-        return items;
-    }
-
-    private List<File> getDebugImages1() {
-        List<File> images = new ArrayList<>();
-        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\1.jpg"));
-        return images;
-    }
-
-    private List<File> getDebugImages2() {
-        List<File> images = new ArrayList<>();
-        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\2.jpg"));
-        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\3.jpg"));
-        images.add(new File("C:\\Users\\Maksim\\Documents\\IDEAProjects\\ebayToMercaryCopier\\images\\4.jpg"));
-        return images;
     }
 
     private List<Cookie> getDebugCookies() {

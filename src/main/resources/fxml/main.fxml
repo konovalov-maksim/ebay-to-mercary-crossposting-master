@@ -7,68 +7,68 @@
            fx:controller="gui.MainController"
            prefHeight="800.0" prefWidth="1200.0"
            orientation="VERTICAL"
-           dividerPositions="0.8" styleClass="padding-pane">
+           dividerPositions="0.85" styleClass="padding-pane">
     <VBox>
-        <TabPane fx:id="paramsTp">
-            <Tab text="General parameters">
-                <VBox styleClass="padding-pane" spacing="5">
-                    <Button text="Login in Mercari" onAction="#openLoginStage"/>
-                    <Button text="Upload items to Mercari" onAction="#uploadItems"/>
-                    <Button text="Load items from Ebay" onAction="#loadItems"/>
+        <TitledPane text="Item parameters" fx:id="itemParamsTp">
+            <SplitPane prefWidth="Infinity" dividerPositions="0.2, 0.4">
+                <VBox spacing="5" minWidth="300" styleClass="padding-pane">
+                    <Label text="Title:"/>
+                    <TextField fx:id="titleTf"/>
+                    <Label text="Description:"/>
+                    <TextArea fx:id="descriptionTa"/>
+                    <Label text="Tags"/>
+                    <HBox spacing="5">
+                        <TextField fx:id="tag0Tf"/>
+                        <TextField fx:id="tag1Tf"/>
+                        <TextField fx:id="tag2Tf"/>
+                    </HBox>
+                    <HBox spacing="5">
+                        <VBox>
+                            <Label text="Condition:"/>
+                            <ComboBox fx:id="conditionCb"/>
+                        </VBox>
+                        <VBox>
+                            <Label text="Price, $:"/>
+                            <TextField fx:id="priceTf"/>
+                        </VBox>
+                    </HBox>
+                    <Button onAction="#applyParams" text="Apply"/>
                 </VBox>
-            </Tab>
-            <Tab text="Item parameters">
-                <SplitPane prefWidth="Infinity" dividerPositions="0.2, 0.4" styleClass="vertical-padding-pane">
-                    <VBox spacing="5" minWidth="300">
-                        <Label text="Title:"/>
-                        <TextField fx:id="titleTf"/>
-                        <Label text="Description:"/>
-                        <TextArea fx:id="descriptionTa"/>
-                        <Label text="Tags"/>
-                        <HBox spacing="5">
-                            <TextField fx:id="tag0Tf"/>
-                            <TextField fx:id="tag1Tf"/>
-                            <TextField fx:id="tag2Tf"/>
-                        </HBox>
-                        <HBox spacing="5">
-                            <VBox>
-                                <Label text="Condition:"/>
-                                <ComboBox fx:id="conditionCb"/>
-                            </VBox>
-                            <VBox>
-                                <Label text="Price, $:"/>
-                                <TextField fx:id="priceTf"/>
-                            </VBox>
-                        </HBox>
-                        <Button onAction="#applyParams" text="Apply"/>
-                    </VBox>
-                    <VBox spacing="5" minWidth="200">
-                        <Label text="Category:"/>
-                        <TreeView fx:id="categoriesTv"/>
-                    </VBox>
-                    <VBox spacing="5">
-                        <Label text="Images"/>
-                        <ScrollPane VBox.vgrow="ALWAYS">
-                            <HBox fx:id="imagesHb" styleClass="padding-pane" spacing="5"/>
-                        </ScrollPane>
-                    </VBox>
-                </SplitPane>
-            </Tab>
-        </TabPane>
-        <TableView fx:id="table">
-            <columns>
-                <TableColumn fx:id="idCol" text="Item ID"/>
-                <TableColumn fx:id="titleCol" text="Title"/>
-                <TableColumn fx:id="descriptionCol" text="Description"/>
-                <TableColumn fx:id="conditionCol" text="Condition"/>
-                <TableColumn fx:id="categoryCol" text="Category"/>
-                <TableColumn fx:id="ebayPriceCol" text="Ebay Price, $" styleClass="number-column"/>
-                <TableColumn fx:id="priceCol" text="Price, $" styleClass="number-column"/>
-                <TableColumn fx:id="tagsCol" text="Tags"/>
-                <TableColumn fx:id="imagesNumCol" text="Images number" styleClass="number-column"/>
-                <TableColumn fx:id="statusCol" text="Status"/>
-            </columns>
-        </TableView>
+                <VBox spacing="5" minWidth="200" styleClass="padding-pane">
+                    <Label text="Category:"/>
+                    <TreeView fx:id="categoriesTv"/>
+                </VBox>
+                <VBox spacing="5" styleClass="padding-pane">
+                    <Label text="Images"/>
+                    <ScrollPane VBox.vgrow="ALWAYS">
+                        <HBox fx:id="imagesHb" styleClass="padding-pane" spacing="5"/>
+                    </ScrollPane>
+                </VBox>
+            </SplitPane>
+        </TitledPane>
+        <VBox spacing="5" styleClass="vertical-padding-pane" VBox.vgrow="ALWAYS">
+            <HBox spacing="5">
+                <Button text="Load items from Ebay" onAction="#addItems"/>
+                <Button text="Login in Mercari" onAction="#openLoginStage"/>
+                <Button text="Upload items to Mercari" onAction="#uploadItems"/>
+                <Label text="ZIP code:"/>
+                <TextField fx:id="zipCodeTf"/>
+            </HBox>
+            <TableView fx:id="table" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="idCol" text="Item ID"/>
+                    <TableColumn fx:id="titleCol" text="Title"/>
+                    <TableColumn fx:id="descriptionCol" text="Description"/>
+                    <TableColumn fx:id="conditionCol" text="Condition"/>
+                    <TableColumn fx:id="categoryCol" text="Category"/>
+                    <TableColumn fx:id="ebayPriceCol" text="Ebay Price, $" styleClass="number-column"/>
+                    <TableColumn fx:id="priceCol" text="Price, $" styleClass="number-column"/>
+                    <TableColumn fx:id="tagsCol" text="Tags"/>
+                    <TableColumn fx:id="imagesNumCol" text="Images number" styleClass="number-column"/>
+                    <TableColumn fx:id="statusCol" text="Status"/>
+                </columns>
+            </TableView>
+        </VBox>
     </VBox>
     <TextArea fx:id="consoleTa" editable="false" styleClass="console"/>
 </SplitPane>
