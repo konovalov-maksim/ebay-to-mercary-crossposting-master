@@ -66,21 +66,24 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     private ObservableList<Item> items = FXCollections.observableArrayList();
 
     public void initialize(URL location, ResourceBundle resources) {
+//        items.addAll(getDebugItems());
+
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
         conditionCol.setCellValueFactory(new PropertyValueFactory<>("conditionName"));
-        ebayPriceCol.setCellValueFactory(new PropertyValueFactory<>("ebayPriceCol"));
+        ebayPriceCol.setCellValueFactory(new PropertyValueFactory<>("ebayPrice"));
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
         tagsCol.setCellValueFactory(new PropertyValueFactory<>("tagsString"));
         imagesNumCol.setCellValueFactory(new PropertyValueFactory<>("imagesNum"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
-        items.addAll(getDebugItems());
         table.setItems(items);
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             showItemParams(table.getSelectionModel().getSelectedItem());
         });
+
+        descriptionTa.setWrapText(true);
 
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
         initCategoriesTv();

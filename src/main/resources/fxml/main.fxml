@@ -18,7 +18,7 @@
                 </VBox>
             </Tab>
             <Tab text="Item parameters">
-                <SplitPane prefWidth="Infinity" dividerPositions="0.2, 0.4">
+                <SplitPane prefWidth="Infinity" dividerPositions="0.2, 0.4" styleClass="vertical-padding-pane">
                     <VBox spacing="5" minWidth="300">
                         <Label text="Title:"/>
                         <TextField fx:id="titleTf"/>
@@ -36,7 +36,7 @@
                                 <ComboBox fx:id="conditionCb"/>
                             </VBox>
                             <VBox>
-                                <Label text="Price:"/>
+                                <Label text="Price, $:"/>
                                 <TextField fx:id="priceTf"/>
                             </VBox>
                         </HBox>
@@ -62,9 +62,9 @@
                 <TableColumn fx:id="descriptionCol" text="Description"/>
                 <TableColumn fx:id="conditionCol" text="Condition"/>
                 <TableColumn fx:id="categoryCol" text="Category"/>
-                <TableColumn fx:id="ebayPriceCol" text="Ebay Price" styleClass="number-column"/>
-                <TableColumn fx:id="priceCol" text="Price" styleClass="number-column"/>
-                <TableColumn fx:id="tagsCol" text="tags"/>
+                <TableColumn fx:id="ebayPriceCol" text="Ebay Price, $" styleClass="number-column"/>
+                <TableColumn fx:id="priceCol" text="Price, $" styleClass="number-column"/>
+                <TableColumn fx:id="tagsCol" text="Tags"/>
                 <TableColumn fx:id="imagesNumCol" text="Images number" styleClass="number-column"/>
                 <TableColumn fx:id="statusCol" text="Status"/>
             </columns>

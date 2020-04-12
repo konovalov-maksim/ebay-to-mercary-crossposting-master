@@ -3,7 +3,7 @@
 }
 
 .vertical-padding-pane {
-    -fx-padding: 10, 0, 10, 0;
+    -fx-padding: 10 0 10 0;
 }
 
 .split-pane {
