@@ -49,7 +49,7 @@
         <VBox spacing="5" styleClass="vertical-padding-pane" VBox.vgrow="ALWAYS">
             <HBox spacing="5">
                 <Button text="Load items from Ebay" onAction="#addItems"/>
-                <Button text="Login in Mercari" onAction="#openLoginStage"/>
+                <Button text="Login in Mercari" onAction="#openLoginDialog"/>
                 <Button text="Upload items to Mercari" onAction="#uploadItems"/>
                 <Label text="ZIP code:"/>
                 <TextField fx:id="zipCodeTf"/>

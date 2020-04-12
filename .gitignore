@@ -1,6 +1,7 @@
 /.idea
 /target
+*.iml
 /images
 *.txt
-*.iml
-/settings.json
+settings.json
+cookies.json

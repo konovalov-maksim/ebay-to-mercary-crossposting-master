@@ -94,6 +94,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
         initCategoriesTv();
+
+        try {
+            dataReader.saveCookies(getDebugCookies());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -123,11 +129,43 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         ItemsUploader uploader = new ItemsUploader();
         uploader.setLogger(this);
         uploader.setUploadingListener(this);
-        uploader.setCookies(getDebugCookies());
-        //uploader.isLoggedIn();
+        uploader.setCookies(loadCookies());
+        if (!uploader.isLoggedIn()) {
+            log("Not logged in");
+            openLoginDialog();
+            return;
+        }
         uploader.setItems(items);
         uploader.setZipCode(settings.getZipCode());
         new Thread(uploader).start();
+    }
+
+    private List<Cookie> loadCookies(){
+        List<Cookie> cookies = new ArrayList<>();
+        try {
+            cookies = dataReader.loadCookies();
+        } catch (IOException e) {
+            e.printStackTrace();
+            log("Error: unable to load cookies");
+        }
+        return cookies;
+    }
+
+    @FXML
+    private void openLoginDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mercariLogin.fxml"), ResourceBundle.getBundle("bundles.strings"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+//            stage.setResizable(false);
+            stage.setTitle("Mercari login");
+            stage.getIcons().add(new Image("/images/icon64.ico"));
+            stage.setScene(new Scene(root));
+            stage.getScene().getStylesheets().add("/style.css");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showItemParams(Item item) {
@@ -182,23 +220,6 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             showErrorAlert("Incorrect Price");
         }
         table.refresh();
-    }
-
-    @FXML
-    private void openLoginStage() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mercariLogin.fxml"), ResourceBundle.getBundle("bundles.strings"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-//            stage.setResizable(false);
-            stage.setTitle("Mercari login");
-            stage.getIcons().add(new Image("/images/icon64.ico"));
-            stage.setScene(new Scene(root));
-            stage.getScene().getStylesheets().add("/style.css");
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
