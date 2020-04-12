@@ -154,14 +154,18 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML
     private void openLoginDialog() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mercariLogin.fxml"), ResourceBundle.getBundle("bundles.strings"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mercariLogin.fxml"),
+                    ResourceBundle.getBundle("bundles.strings"));
             Parent root = loader.load();
             Stage stage = new Stage();
-//            stage.setResizable(false);
-            stage.setTitle("Mercari login");
-            stage.getIcons().add(new Image("/images/icon64.ico"));
+            stage.setTitle("Log in - Mercari");
+            stage.getIcons().add(new Image("/images/icon64.png"));
             stage.setScene(new Scene(root));
-            stage.getScene().getStylesheets().add("/style.css");
+
+            LoginController loginController = loader.getController();
+            loginController.setEmail(settings.getMercariEmail());
+            loginController.setPassword(settings.getMercariPass());
+            loginController.loadLoginPage();
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

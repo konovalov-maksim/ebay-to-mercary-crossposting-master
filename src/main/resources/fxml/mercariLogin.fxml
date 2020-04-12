@@ -5,8 +5,8 @@
 <?import javafx.scene.web.WebView?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gui.MercariLoginController"
-            prefHeight="800.0" prefWidth="800.0">
+            fx:controller="gui.LoginController"
+            prefHeight="900.0" prefWidth="400.0">
     <WebView fx:id="mainWv"
              AnchorPane.bottomAnchor="0"
              AnchorPane.leftAnchor="0"
