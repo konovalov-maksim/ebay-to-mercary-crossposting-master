@@ -1,14 +1,8 @@
 package gui;
 
-import javafx.application.Application;
-import javafx.beans.property.*;
-import javafx.beans.value.*;
-import javafx.event.*;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.web.*;
-import javafx.stage.Stage;
+import com.sun.webkit.network.CookieManager;
+import javafx.event.EventType;
+import okhttp3.Cookie;
 import org.w3c.dom.*;
 import org.w3c.dom.html.*;
 import javafx.fxml.FXML;
@@ -19,10 +13,11 @@ import javafx.scene.web.WebView;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LoginController implements Initializable {
 
-    private List<String> cookies = new ArrayList<>();
+    private List<Cookie> cookies = new LinkedList<>();
     private String email;
     private String password;
 
@@ -34,30 +29,76 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.setProperty("https.proxyHost", "192.41.71.199");
+        final String targetDomain = "www.mercari.com";
+
+/*        CookieManager.setDefault(new CookieHandler() {
+            @Override
+            public Map<String, List<String>> get(URI uri, Map<String, List<String>> requestHeaders) throws IOException {
+                return new LinkedHashMap<>();
+            }
+
+            @Override
+            public void put(URI uri, Map<String, List<String>> responseHeaders) throws IOException {
+                if (!uri.getHost().equals(targetDomain)) return;
+                List<String> setCookies = responseHeaders.get("Set-Cookie");
+                if (setCookies != null) {
+                    for (String setCookie : setCookies) {
+                        try {
+                            String nameValue = setCookie.split(";")[0];
+                            String name = nameValue.split("=")[0];
+                            String value = nameValue.split("=")[1];
+                            Cookie cookie = new Cookie.Builder()
+                                    .domain(targetDomain)
+                                    .name(name)
+                                    .value(value)
+                                    .build();
+                            cookies = cookies.stream()
+                                    .filter(c -> !c.name().equals(name))
+                                    .collect(Collectors.toList());
+                            cookies.add(cookie);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                new DataReader().saveCookies(cookies);
+            }
+        });*/
+//        Authenticator.setDefault(
+//                new Authenticator() {
+//                    @Override
+//                    public PasswordAuthentication getPasswordAuthentication() {
+//                        return new PasswordAuthentication(authUser, authPassword.toCharArray());
+//                    }
+//                }
+//        );
+//        System.setProperty("http.proxyUser", authUser);
+//        System.setProperty("http.proxyPassword", authPassword);
+//        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+//        System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
+        Locale.setDefault(new Locale("en", "US"));
+        System.setProperty("https.proxyHost", "96.113.220.54");
         System.setProperty("https.proxyPort", "3128");
+//        System.setProperty("java.net.useSystemProxies", "true");
         webEngine = mainWv.getEngine();
         webEngine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0");
         webEngine.documentProperty().addListener((ov, oldDoc, doc) -> {
             if (doc == null) return;
             String documentUri = doc.getDocumentURI();
-            if (documentUri.equals("https://www.mercari.com/login/")) {
+            System.out.println(documentUri);
+            if (documentUri.equals("https://www.mercari.com/login/"))
                 setDefaultCredentials(doc);
+            else if (documentUri.equals("https://www.mercari.com/mypage/")) {
+                System.out.println("++++Logged in+++++");
             }
         });
-//        URI uri = URI.create("https://www.mercari.com");
-/*        Map<String, List<String>> headers = new LinkedHashMap<>();
-        headers.put("Set-Cookie", getTestCookies());
-        try {
-            java.net.CookieHandler.getDefault().put(uri, headers);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-        //        webEngine.load("https://whatismyipaddress.com/");
+
     }
 
     public void loadLoginPage() {
         webEngine.load("https://www.mercari.com/login/");
+//        webEngine.executeScript("")
+//        webEngine.load("https://whatismyipaddress.com/");
     }
 
     private void setDefaultCredentials(Document doc) {
@@ -82,14 +123,6 @@ public class LoginController implements Initializable {
         return cookies;
     }
 
-    public List<String> getCookies() {
-        return cookies;
-    }
-
-    public void setCookies(List<String> cookies) {
-        this.cookies = cookies;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -105,4 +138,5 @@ public class LoginController implements Initializable {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }

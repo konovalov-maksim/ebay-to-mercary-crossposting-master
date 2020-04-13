@@ -64,6 +64,8 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     private Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
     private ObservableList<Item> items = FXCollections.observableArrayList();
 
+    private Stage loginStage = new Stage();
+
     private Settings settings;
 
     public void initialize(URL location, ResourceBundle resources) {
@@ -95,11 +97,11 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
         initCategoriesTv();
 
-        try {
-            dataReader.saveCookies(getDebugCookies());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            dataReader.saveCookies(getDebugCookies());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @FXML
@@ -157,16 +159,15 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mercariLogin.fxml"),
                     ResourceBundle.getBundle("bundles.strings"));
             Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Log in - Mercari");
-            stage.getIcons().add(new Image("/images/icon64.png"));
-            stage.setScene(new Scene(root));
+            loginStage.setTitle("Log in - Mercari");
+            loginStage.getIcons().add(new Image("/images/icon64.png"));
+            loginStage.setScene(new Scene(root));
 
             LoginController loginController = loader.getController();
             loginController.setEmail(settings.getMercariEmail());
             loginController.setPassword(settings.getMercariPass());
             loginController.loadLoginPage();
-            stage.show();
+            loginStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

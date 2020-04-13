@@ -1,9 +1,6 @@
 package gui;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import core.Category;
 import okhttp3.Cookie;
 
@@ -15,10 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataReader {
@@ -36,7 +30,7 @@ public class DataReader {
         return new Gson().fromJson(json, Settings.class);
     }
 
-    public void saveSettings(Settings settings) throws IOException, URISyntaxException {
+    public void saveSettings(Settings settings) throws IOException {
         String json = new Gson().toJson(settings);
         Files.write(settingsPath,
                 Collections.singletonList(json),
@@ -75,10 +69,10 @@ public class DataReader {
         return cookies;
     }
 
-    public void saveCookies(List<Cookie> cookies) throws IOException {
+    public synchronized void saveCookies(List<Cookie> cookies) throws IOException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Files.write(cookiesPath,
-                Collections.singletonList(new Gson().toJson(cookies)),
-                StandardCharsets.UTF_8,
+                gson.toJson(cookies).getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING);
     }
