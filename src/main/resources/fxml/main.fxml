@@ -7,44 +7,46 @@
            fx:controller="gui.MainController"
            prefHeight="800.0" prefWidth="1200.0"
            orientation="VERTICAL"
-           dividerPositions="0.85" styleClass="padding-pane">
+           dividerPositions="0.9" styleClass="padding-pane">
     <VBox>
         <TitledPane text="Item parameters" fx:id="itemParamsTp">
-            <SplitPane prefWidth="Infinity" dividerPositions="0.2, 0.4">
-                <VBox spacing="5" minWidth="300" styleClass="padding-pane">
-                    <Label text="Title:"/>
-                    <TextField fx:id="titleTf"/>
-                    <Label text="Description:"/>
-                    <TextArea fx:id="descriptionTa"/>
-                    <Label text="Tags"/>
-                    <HBox spacing="5">
-                        <TextField fx:id="tag0Tf"/>
-                        <TextField fx:id="tag1Tf"/>
-                        <TextField fx:id="tag2Tf"/>
-                    </HBox>
-                    <HBox spacing="5">
-                        <VBox>
-                            <Label text="Condition:"/>
-                            <ComboBox fx:id="conditionCb"/>
-                        </VBox>
-                        <VBox>
-                            <Label text="Price, $:"/>
-                            <TextField fx:id="priceTf"/>
-                        </VBox>
-                    </HBox>
-                    <Button onAction="#applyParams" text="Apply"/>
-                </VBox>
-                <VBox spacing="5" minWidth="200" styleClass="padding-pane">
-                    <Label text="Category:"/>
-                    <TreeView fx:id="categoriesTv"/>
-                </VBox>
-                <VBox spacing="5" styleClass="padding-pane">
-                    <Label text="Images"/>
-                    <ScrollPane VBox.vgrow="ALWAYS">
-                        <HBox fx:id="imagesHb" styleClass="padding-pane" spacing="5"/>
-                    </ScrollPane>
-                </VBox>
-            </SplitPane>
+            <VBox styleClass="padding-pane" spacing="5">
+                <SplitPane prefWidth="Infinity" dividerPositions="0.3, 0.8">
+                    <VBox spacing="5" minWidth="300">
+                        <Label fx:id="titleLbl"/>
+                        <TextField fx:id="titleTf"/>
+                        <Label text="Tags:"/>
+                        <HBox spacing="5">
+                            <TextField fx:id="tag0Tf"/>
+                            <TextField fx:id="tag1Tf"/>
+                            <TextField fx:id="tag2Tf"/>
+                        </HBox>
+                        <HBox spacing="5">
+                            <VBox>
+                                <Label text="Condition:"/>
+                                <ComboBox fx:id="conditionCb"/>
+                            </VBox>
+                            <VBox>
+                                <Label text="Price, $:"/>
+                                <TextField fx:id="priceTf"/>
+                            </VBox>
+                        </HBox>
+                        <Label text="Images:"/>
+                        <ScrollPane VBox.vgrow="ALWAYS" minHeight="160" styleClass="padding-pane" fx:id="imagesSp">
+                            <HBox fx:id="imagesHb" spacing="5" maxHeight="Infinity"/>
+                        </ScrollPane>
+                    </VBox>
+                    <VBox spacing="5">
+                        <Label fx:id="descriptionLbl"/>
+                        <TextArea fx:id="descriptionTa" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+                    <VBox spacing="5" minWidth="200" prefWidth="250">
+                        <Label text="Category:"/>
+                        <TreeView fx:id="categoriesTv"/>
+                    </VBox>
+                </SplitPane>
+                <Button onAction="#applyParams" text="Apply" minWidth="150"/>
+            </VBox>
         </TitledPane>
         <VBox spacing="5" styleClass="vertical-padding-pane" VBox.vgrow="ALWAYS">
             <HBox spacing="5">

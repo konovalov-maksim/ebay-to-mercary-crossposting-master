@@ -5,6 +5,7 @@ import core.ebayLoader.ItemsLoader;
 import core.ebayLoader.LoadingListener;
 import core.mercariUploader.ItemsUploader;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,6 +38,8 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @FXML private TitledPane itemParamsTp;
 
+    @FXML private Label titleLbl;
+    @FXML private Label descriptionLbl;
     @FXML private HBox imagesHb;
     @FXML private TextField titleTf;
     @FXML private TextField priceTf;
@@ -46,6 +49,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private TextArea descriptionTa;
     @FXML private ComboBox<Condition> conditionCb;
     @FXML private TreeView<Category> categoriesTv;
+    @FXML private ScrollPane imagesSp;
 
     @FXML private TextField zipCodeTf;
 
@@ -104,6 +108,13 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
         initCategoriesTv();
+
+        titleLbl.textProperty().bind(Bindings.concat("Title (")
+                .concat(titleTf.textProperty().length())
+                .concat("/40):"));
+        descriptionLbl.textProperty().bind(Bindings.concat("Description (")
+                .concat(descriptionTa.textProperty().length())
+                .concat("/1000):"));
     }
 
     @FXML
@@ -198,7 +209,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             try (InputStream imageIs = new FileInputStream(file) ) {
                 Image image = new Image(imageIs);
                 ImageView imageView = new ImageView(image);
-                imageView.setFitWidth(200);
+                imageView.fitHeightProperty().bind(imagesSp.heightProperty().subtract(35));
                 imageView.setPreserveRatio(true);
                 imagesHb.getChildren().add(imageView);
             } catch (Exception e) {
