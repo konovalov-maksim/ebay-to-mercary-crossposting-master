@@ -103,6 +103,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             showItemParams(table.getSelectionModel().getSelectedItem());
         });
+        new TableContextMenu(table);
 
         descriptionTa.setWrapText(true);
 
@@ -212,6 +213,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
                 imageView.fitHeightProperty().bind(imagesSp.heightProperty().subtract(35));
                 imageView.setPreserveRatio(true);
                 imagesHb.getChildren().add(imageView);
+                imageView.setOnMouseClicked(event -> {
+                    if (event.getClickCount() == 2) {
+                        imagesHb.getChildren().remove(imageView);
+                        item.getImages().remove(file);
+                    }
+                });
             } catch (Exception e) {
                 e.printStackTrace();
                 log(item + " - unable to open item image");
