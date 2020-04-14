@@ -99,10 +99,21 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         isValidCol.setCellFactory(tc -> new CheckBoxTableCell<>());
         isUploadedCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isUploaded()));
         isUploadedCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+        idCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        titleCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        descriptionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        conditionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        ebayPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        priceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        tagsCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        imagesNumCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        isValidCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        isUploadedCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         table.setItems(items);
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             showItemParams(table.getSelectionModel().getSelectedItem());
         });
+        table.setTableMenuButtonVisible(true);
         new TableContextMenu(table);
 
         descriptionTa.setWrapText(true);
@@ -217,6 +228,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
                     if (event.getClickCount() == 2) {
                         imagesHb.getChildren().remove(imageView);
                         item.getImages().remove(file);
+                        table.refresh();
                     }
                 });
             } catch (Exception e) {
