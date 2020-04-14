@@ -15,7 +15,17 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DataReader {
+public class DataManager {
+
+    private static DataManager instance;
+
+    private DataManager() {}
+
+    public static synchronized DataManager getInstance() {
+        if (instance == null)
+            instance = new DataManager();
+        return instance;
+    }
 
     public List<Category> getCategories() throws IOException, URISyntaxException {
         URI uri = getClass().getResource("/json/categories.json").toURI();

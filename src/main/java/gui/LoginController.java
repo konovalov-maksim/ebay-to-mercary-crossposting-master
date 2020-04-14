@@ -1,20 +1,27 @@
 package gui;
 
-import okhttp3.Cookie;
-import org.w3c.dom.*;
-import org.w3c.dom.html.*;
+import core.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
+import okhttp3.Cookie;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.html.HTMLFormElement;
+import org.w3c.dom.html.HTMLInputElement;
 
-import java.net.*;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpCookie;
+import java.net.URL;
 import java.util.*;
 
 public class LoginController implements Initializable {
 
-    private String email;
-    private String password;
+    private Settings settings;
+    private Logger logger;
 
     private WebViewCookieStore store = new WebViewCookieStore();
 
@@ -42,10 +49,37 @@ public class LoginController implements Initializable {
             if (documentUri.equals("https://www.mercari.com/login/"))
                 setDefaultCredentials(doc);
             else if (documentUri.equals("https://www.mercari.com/mypage/")) {
-                System.out.println("++++Logged in+++++");
-                store.get(targetDomain).forEach(c -> System.out.println(c.getName() + ": "  + c.getValue() + "\n"));
+                log("Successfully logged in");
+                saveLoginCookies(store.get(targetDomain));
+                ((Stage) mainWv.getScene().getWindow()).close();
+//                store.get(targetDomain).forEach(c -> System.out.println(c.getName() + ": "  + c.getValue() + "\n"));
             }
         });
+    }
+
+    private void saveLoginCookies(List<HttpCookie> httpCookies) {
+        try {
+            List<Cookie> cookies = new ArrayList<>();
+            for (HttpCookie httpCookie : httpCookies) {
+                System.out.println(new Date(httpCookie.getMaxAge()));
+
+                Cookie.Builder builder = new Cookie.Builder()
+                        .domain(httpCookie.getDomain().replaceAll("^\\.", ""))
+                        .name(httpCookie.getName())
+                        .value(httpCookie.getValue());
+                if (httpCookie.getPath() != null)
+                    builder.path(httpCookie.getPath());
+                if (httpCookie.getSecure())
+                    builder.secure();
+                if (httpCookie.isHttpOnly())
+                    builder.httpOnly();
+                cookies.add(builder.build());
+            }
+            DataManager.getInstance().saveCookies(cookies);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("Failed to save credentials");
+        }
     }
 
     public void loadLoginPage() {
@@ -59,8 +93,8 @@ public class LoginController implements Initializable {
         NodeList inputs = emailForm.getElementsByTagName("input");
         for (int k = 0; k < inputs.getLength(); k++) {
             HTMLInputElement input = (HTMLInputElement) inputs.item(k);
-            if ("email".equals(input.getName())) input.setValue(email);
-            else if ("password".equals(input.getName())) input.setValue(password);
+            if ("email".equals(input.getName())) input.setValue(settings.getMercariEmail());
+            else if ("password".equals(input.getName())) input.setValue(settings.getMercariPass());
         }
     }
 
@@ -74,20 +108,23 @@ public class LoginController implements Initializable {
         return cookies;
     }
 
-    public String getEmail() {
-        return email;
+    private void log(String message) {
+        if (logger != null) logger.log(message);
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public Settings getSettings() {
+        return settings;
     }
 
-    public String getPassword() {
-        return password;
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public Logger getLogger() {
+        return logger;
     }
 
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
 }

@@ -60,7 +60,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private TableColumn<Item, Integer> imagesNumCol;
     @FXML private TableColumn<Item, String> statusCol;
 
-    private DataReader dataReader = new DataReader();
+    private DataManager dataManager = DataManager.getInstance();
     private Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
     private ObservableList<Item> items = FXCollections.observableArrayList();
 
@@ -70,7 +70,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            settings = dataReader.loadSettings();
+            settings = dataManager.loadSettings();
             zipCodeTf.setText(settings.getZipCode());
         } catch (IOException e) {
             e.printStackTrace();
@@ -145,7 +145,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     private List<Cookie> loadCookies(){
         List<Cookie> cookies = new ArrayList<>();
         try {
-            cookies = dataReader.loadCookies();
+            cookies = dataManager.loadCookies();
         } catch (IOException e) {
             e.printStackTrace();
             log("Error: unable to load cookies");
@@ -164,9 +164,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             loginStage.setScene(new Scene(root));
 
             LoginController loginController = loader.getController();
-            loginController.setEmail(settings.getMercariEmail());
-            loginController.setPassword(settings.getMercariPass());
+            loginController.setSettings(settings);
             loginController.loadLoginPage();
+            loginController.setLogger(this);
             loginStage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -299,7 +299,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     private void initCategoriesTv() {
         try {
-            List<Category> categories = dataReader.getCategories();
+            List<Category> categories = dataManager.getCategories();
             TreeItem<Category> rootItem = new TreeItem<>(new Category());
             rootItem.getChildren().addAll(findChildren(null, categories));
             categoriesTv.setRoot(rootItem);

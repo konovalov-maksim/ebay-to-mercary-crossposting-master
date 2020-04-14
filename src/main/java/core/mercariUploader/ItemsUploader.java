@@ -73,7 +73,7 @@ public class ItemsUploader implements Runnable{
     private String getStatus(String responseBody) {
         JsonObject root = new Gson().fromJson(responseBody, JsonObject.class);
         try {
-            if (root.has("data")) {
+            if (!root.has("errors")) {
                 String id = root
                         .get("data").getAsJsonObject()
                         .get("createListing").getAsJsonObject()
@@ -129,7 +129,7 @@ public class ItemsUploader implements Runnable{
                 return cookies;
             }
         };
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.41.71.199", 3128));
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.41.19.53", 3128));
         client = new OkHttpClient.Builder()
                 .cookieJar(cookieJar)
                 .proxy(proxy)
