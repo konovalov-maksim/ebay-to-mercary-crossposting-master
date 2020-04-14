@@ -1,7 +1,5 @@
 package gui;
 
-import com.sun.webkit.network.CookieManager;
-import javafx.event.EventType;
 import okhttp3.Cookie;
 import org.w3c.dom.*;
 import org.w3c.dom.html.*;
@@ -10,20 +8,18 @@ import javafx.fxml.Initializable;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
-import java.io.IOException;
 import java.net.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class LoginController implements Initializable {
 
-    private List<Cookie> cookies = new LinkedList<>();
     private String email;
     private String password;
 
+    private WebViewCookieStore store = new WebViewCookieStore();
+
     @FXML
     private WebView mainWv;
-
     private WebEngine webEngine;
 
 
@@ -31,55 +27,12 @@ public class LoginController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         final String targetDomain = "www.mercari.com";
 
-/*        CookieManager.setDefault(new CookieHandler() {
-            @Override
-            public Map<String, List<String>> get(URI uri, Map<String, List<String>> requestHeaders) throws IOException {
-                return new LinkedHashMap<>();
-            }
+        CookieManager cookieManager = new CookieManager(store, CookiePolicy.ACCEPT_ALL);
+        CookieManager.setDefault(cookieManager);
 
-            @Override
-            public void put(URI uri, Map<String, List<String>> responseHeaders) throws IOException {
-                if (!uri.getHost().equals(targetDomain)) return;
-                List<String> setCookies = responseHeaders.get("Set-Cookie");
-                if (setCookies != null) {
-                    for (String setCookie : setCookies) {
-                        try {
-                            String nameValue = setCookie.split(";")[0];
-                            String name = nameValue.split("=")[0];
-                            String value = nameValue.split("=")[1];
-                            Cookie cookie = new Cookie.Builder()
-                                    .domain(targetDomain)
-                                    .name(name)
-                                    .value(value)
-                                    .build();
-                            cookies = cookies.stream()
-                                    .filter(c -> !c.name().equals(name))
-                                    .collect(Collectors.toList());
-                            cookies.add(cookie);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                new DataReader().saveCookies(cookies);
-            }
-        });*/
-//        Authenticator.setDefault(
-//                new Authenticator() {
-//                    @Override
-//                    public PasswordAuthentication getPasswordAuthentication() {
-//                        return new PasswordAuthentication(authUser, authPassword.toCharArray());
-//                    }
-//                }
-//        );
-//        System.setProperty("http.proxyUser", authUser);
-//        System.setProperty("http.proxyPassword", authPassword);
-//        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
-//        System.setProperty("jdk.http.auth.tunneling.disabledSchemes", "");
         Locale.setDefault(new Locale("en", "US"));
-        System.setProperty("https.proxyHost", "96.113.220.54");
+        System.setProperty("https.proxyHost", "192.41.19.53");
         System.setProperty("https.proxyPort", "3128");
-//        System.setProperty("java.net.useSystemProxies", "true");
         webEngine = mainWv.getEngine();
         webEngine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0");
         webEngine.documentProperty().addListener((ov, oldDoc, doc) -> {
@@ -90,15 +43,13 @@ public class LoginController implements Initializable {
                 setDefaultCredentials(doc);
             else if (documentUri.equals("https://www.mercari.com/mypage/")) {
                 System.out.println("++++Logged in+++++");
+                store.get(targetDomain).forEach(c -> System.out.println(c.getName() + ": "  + c.getValue() + "\n"));
             }
         });
-
     }
 
     public void loadLoginPage() {
         webEngine.load("https://www.mercari.com/login/");
-//        webEngine.executeScript("")
-//        webEngine.load("https://whatismyipaddress.com/");
     }
 
     private void setDefaultCredentials(Document doc) {
