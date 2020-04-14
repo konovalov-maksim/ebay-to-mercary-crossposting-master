@@ -60,6 +60,7 @@ public class ItemsUploader implements Runnable{
                 System.out.println(responseBody);
                 String uploadingStatus = getStatus(responseBody);
                 item.setStatus(uploadingStatus);
+                item.setUploaded(true);
                 uploadingListener.onItemUploaded(item);
             } catch (IOException e) {
                 e.printStackTrace();

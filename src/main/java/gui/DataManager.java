@@ -33,7 +33,7 @@ public class DataManager {
         Category[] categories = new Gson().fromJson(json, Category[].class);
         return Arrays.asList(categories);
     }
-    Path settingsPath = Paths.get("").toAbsolutePath().resolve("settings.json");
+    private Path settingsPath = Paths.get("").toAbsolutePath().resolve("settings.json");
 
     public Settings loadSettings() throws IOException {
         String json = Files.lines(settingsPath).collect(Collectors.joining());
@@ -49,7 +49,7 @@ public class DataManager {
                 StandardOpenOption.CREATE);
     }
 
-    Path cookiesPath = Paths.get("").toAbsolutePath().resolve("cookies.json");
+    private Path cookiesPath = Paths.get("").toAbsolutePath().resolve("cookies.json");
 
     public List<Cookie> loadCookies() throws IOException {
         List<Cookie> cookies = new ArrayList<>();

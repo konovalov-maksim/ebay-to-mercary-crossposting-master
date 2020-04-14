@@ -5,6 +5,7 @@ import core.ebayLoader.ItemsLoader;
 import core.ebayLoader.LoadingListener;
 import core.mercariUploader.ItemsUploader;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -59,6 +61,8 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private TableColumn<Item, String> tagsCol;
     @FXML private TableColumn<Item, Integer> imagesNumCol;
     @FXML private TableColumn<Item, String> statusCol;
+    @FXML private TableColumn<Item, Boolean> isValidCol;
+    @FXML private TableColumn<Item, Boolean> isUploadedCol;
 
     private DataManager dataManager = DataManager.getInstance();
     private Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
@@ -87,6 +91,10 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         imagesNumCol.setCellValueFactory(new PropertyValueFactory<>("imagesNum"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+        isValidCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isValid()));
+        isValidCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+        isUploadedCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isUploaded()));
+        isUploadedCol.setCellFactory(tc -> new CheckBoxTableCell<>());
         table.setItems(items);
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             showItemParams(table.getSelectionModel().getSelectedItem());
@@ -96,12 +104,6 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
         initCategoriesTv();
-
-//        try {
-//            dataReader.saveCookies(getDebugCookies());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     @FXML

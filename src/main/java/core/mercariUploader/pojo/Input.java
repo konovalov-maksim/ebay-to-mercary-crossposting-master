@@ -20,7 +20,7 @@ public class Input {
         this.zipCode = zipCode;
         this.tags = item.getTags();
         this.salesFee = item.getPrice() * 10;
-        this.shippingPayerId = 2; //TODO check this value
+        this.shippingPayerId = 2;
         this.shippingClassIds = Arrays.asList(0);
         this.isAutoPriceDrop = false;
         this.minPriceForAutoPriceDrop = item.getPrice() * 80;

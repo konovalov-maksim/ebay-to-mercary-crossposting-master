@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Item {
@@ -19,6 +18,8 @@ public class Item {
     private String[] tags = new String[]{null, null, null};
     private Condition condition;
     private Category category;
+    private String brand;
+    private boolean isUploaded = false;
     private String status;
 
     public Item() {
@@ -26,6 +27,16 @@ public class Item {
 
     public Item(String id) {
         this.id = id;
+    }
+
+    public boolean isValid() {
+        if (title == null || title.length() == 0 || title.length() > 40 ) return false;
+        if (description == null || description.length() == 0 || description.length() > 1000 ) return false;
+        if (price == null || price < 5) return false;
+        if (images == null || images.isEmpty()) return false;
+        if (condition == null) return false;
+        if (category == null) return false;
+        return true;
     }
 
     @Override
@@ -167,4 +178,11 @@ public class Item {
         tags[2] = value;
     }
 
+    public boolean isUploaded() {
+        return isUploaded;
+    }
+
+    public void setUploaded(boolean uploaded) {
+        isUploaded = uploaded;
+    }
 }
