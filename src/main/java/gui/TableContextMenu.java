@@ -14,7 +14,6 @@ import java.net.URI;
 public class TableContextMenu extends ContextMenu {
 
     public TableContextMenu(TableView<Item> table) {
-        final int IMG_SIZE = 16;
 
         table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         table.getSelectionModel().setCellSelectionEnabled(false);

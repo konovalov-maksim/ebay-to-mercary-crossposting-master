@@ -134,10 +134,10 @@ public class ItemsUploader implements Runnable{
                 return cookies;
             }
         };
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.41.19.53", 3128));
+//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("192.41.19.53", 3128));
         client = new OkHttpClient.Builder()
                 .cookieJar(cookieJar)
-                .proxy(proxy)
+//                .proxy(proxy)
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .build();
         imagesUploader = new ImagesUploader(client);

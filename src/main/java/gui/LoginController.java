@@ -28,14 +28,12 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        final String targetDomain = "www.mercari.com";
-
         CookieManager cookieManager = new CookieManager(store, CookiePolicy.ACCEPT_ALL);
         CookieManager.setDefault(cookieManager);
 
-        Locale.setDefault(new Locale("en", "US"));
-        System.setProperty("https.proxyHost", "192.41.19.53");
-        System.setProperty("https.proxyPort", "3128");
+//        Locale.setDefault(new Locale("en", "US"));
+//        System.setProperty("https.proxyHost", "192.41.19.53");
+//        System.setProperty("https.proxyPort", "3128");
         webEngine = mainWv.getEngine();
         webEngine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0");
         webEngine.documentProperty().addListener((ov, oldDoc, doc) -> {
@@ -43,7 +41,7 @@ public class LoginController implements Initializable {
             String documentUri = doc.getDocumentURI();
             if (documentUri.equals("https://www.mercari.com/mypage/")) {
                 log("Successfully logged in");
-                saveLoginCookies(store.get(targetDomain));
+                saveLoginCookies(store.get("www.mercari.com"));
                 ((Stage) mainWv.getScene().getWindow()).close();
             }
         });
