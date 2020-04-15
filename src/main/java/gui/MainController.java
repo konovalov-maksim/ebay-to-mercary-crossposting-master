@@ -261,7 +261,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @Override
     public void log(String message) {
-        String curTime = new SimpleDateFormat("MM/dd/yyyy  HH:mm:ss:SSS").format(new Date());
+        String curTime = new SimpleDateFormat("HH:mm:ss:SSS").format(new Date());
         Platform.runLater(() -> {
             consoleTa.setText(consoleTa.getText() + curTime + "     " + message + "\n");
             consoleTa.positionCaret(consoleTa.getLength());
@@ -270,9 +270,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @Override
     public void clearLog() {
-        Platform.runLater(() -> {
-            consoleTa.setText("");
-        });
+        Platform.runLater(() -> consoleTa.setText(""));
     }
 
     @Override
@@ -326,9 +324,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         isValidCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         isUploadedCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         table.setItems(items);
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            showItemParams(table.getSelectionModel().getSelectedItem());
-        });
+        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+            showItemParams(table.getSelectionModel().getSelectedItem())
+        );
         table.setTableMenuButtonVisible(true);
         new TableContextMenu(table);
     }
