@@ -93,12 +93,14 @@ public class ItemsLoader implements Runnable {
         item.setPrice((int) Math.round(ebayPrice));
         String description = Jsoup.parse(ebayItem.getDescription()).text();
         item.setDescription(description);
-        int conditionId = ebayItem.getConditionID();
-        if (conditionId == 1000) item.setCondition(new Condition(1));
-        else if (conditionId <= 2750) item.setCondition(new Condition(2));
-        else if (conditionId <= 5000) item.setCondition(new Condition(3));
-        else if (conditionId <= 6000) item.setCondition(new Condition(4));
-        else item.setCondition(new Condition(5));
+        Integer conditionId = ebayItem.getConditionID();
+        if (conditionId != null) {
+            if (conditionId == 1000) item.setCondition(new Condition(1));
+            else if (conditionId <= 2750) item.setCondition(new Condition(2));
+            else if (conditionId <= 5000) item.setCondition(new Condition(3));
+            else if (conditionId <= 6000) item.setCondition(new Condition(4));
+            else if (conditionId == 7000) item.setCondition(new Condition(5));
+        }
         return item;
     }
 
