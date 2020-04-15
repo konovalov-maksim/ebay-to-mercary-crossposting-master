@@ -18,7 +18,8 @@ public class Item {
     private String[] tags = new String[]{null, null, null};
     private Condition condition;
     private Category category;
-    private String brand;
+    private String ebayUrl;
+    private String mercariUrl;
     private boolean isUploaded = false;
     private String status;
 
@@ -184,5 +185,21 @@ public class Item {
 
     public void setUploaded(boolean uploaded) {
         isUploaded = uploaded;
+    }
+
+    public String getEbayUrl() {
+        return ebayUrl;
+    }
+
+    public void setEbayUrl(String ebayUrl) {
+        this.ebayUrl = ebayUrl;
+    }
+
+    public String getMercariUrl() {
+        return mercariUrl;
+    }
+
+    public void setMercariUrl(String mercariUrl) {
+        this.mercariUrl = mercariUrl;
     }
 }

@@ -199,6 +199,10 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     }
 
     private void showItemParams(Item item) {
+        if (item == null) {
+            clearItemParamsFields();
+            return;
+        }
         itemParamsTp.setExpanded(true);
         titleTf.setText(item.getTitle());
         priceTf.setText(String.valueOf(item.getPrice()));
@@ -237,6 +241,20 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
                 item.getImages().remove(file);
             }
         }
+    }
+
+    private void clearItemParamsFields() {
+        itemParamsTp.setExpanded(true);
+        titleTf.clear();
+        priceTf.clear();
+        descriptionTa.clear();
+        imagesHb.getChildren().clear();
+        conditionCb.setValue(new Condition(1));
+        categoriesTv.getSelectionModel().clearSelection();
+        tag0Tf.clear();
+        tag1Tf.clear();
+        tag2Tf.clear();
+        imagesHb.getChildren().clear();
     }
 
     @FXML

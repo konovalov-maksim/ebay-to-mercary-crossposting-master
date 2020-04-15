@@ -101,6 +101,8 @@ public class ItemsLoader implements Runnable {
             else if (conditionId <= 6000) item.setCondition(new Condition(4));
             else if (conditionId == 7000) item.setCondition(new Condition(5));
         }
+        String ebayUrl = ebayItem.getViewItemURLForNaturalSearch();
+        item.setEbayUrl(ebayUrl);
         return item;
     }
 

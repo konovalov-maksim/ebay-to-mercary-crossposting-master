@@ -77,6 +77,7 @@ public class ItemsUploader implements Runnable{
                         .get("createListing").getAsJsonObject()
                         .get("id").getAsString();
                 item.setStatus("Successfully uploaded. ID " + id);
+                item.setMercariUrl("https://www.mercari.com/us/item/" + id + "/");
                 item.setUploaded(true);
             } else {
                 String message = root
