@@ -52,7 +52,8 @@
             <HBox spacing="5" alignment="CENTER_LEFT">
                 <Button text="Load items from Ebay" onAction="#addItems"/>
                 <Button text="Upload items to Mercari" onAction="#doChecks"/>
-                <Button text="Login in Mercari" onAction="#openLoginDialog"/>
+                <Button text="Clear list" onAction="#clearItems"/>
+                <Button text="Log in to Mercari" onAction="#openLoginDialog"/>
                 <Label text="ZIP code:"/>
                 <TextField fx:id="zipCodeTf"/>
             </HBox>

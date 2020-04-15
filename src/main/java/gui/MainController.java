@@ -277,6 +277,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         table.refresh();
     }
 
+    @FXML
+    private void clearItems() {
+        items.clear();
+        table.refresh();
+    }
+
     @Override
     public void log(String message) {
         String curTime = new SimpleDateFormat("HH:mm:ss:SSS").format(new Date());
