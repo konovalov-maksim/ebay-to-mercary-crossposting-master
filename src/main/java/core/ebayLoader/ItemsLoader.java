@@ -1,6 +1,7 @@
 package core.ebayLoader;
 
 import com.google.gson.Gson;
+import core.Condition;
 import core.Item;
 import core.Logger;
 import core.ebayLoader.pojo.EbayItem;
@@ -92,6 +93,12 @@ public class ItemsLoader implements Runnable {
         item.setPrice((int) Math.round(ebayPrice));
         String description = Jsoup.parse(ebayItem.getDescription()).text();
         item.setDescription(description);
+        int conditionId = ebayItem.getConditionID();
+        if (conditionId == 1000) item.setCondition(new Condition(1));
+        else if (conditionId <= 2750) item.setCondition(new Condition(2));
+        else if (conditionId <= 5000) item.setCondition(new Condition(3));
+        else if (conditionId <= 6000) item.setCondition(new Condition(4));
+        else item.setCondition(new Condition(5));
         return item;
     }
 
