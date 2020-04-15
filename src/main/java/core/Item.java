@@ -33,7 +33,7 @@ public class Item {
         if (title == null || title.length() == 0 || title.length() > 40 ) return false;
         if (description == null || description.length() == 0 || description.length() > 1000 ) return false;
         if (price == null || price < 5) return false;
-        if (images == null || images.isEmpty()) return false;
+        if (images == null || images.isEmpty() || images.size() > 12) return false;
         if (condition == null) return false;
         if (category == null) return false;
         return true;
