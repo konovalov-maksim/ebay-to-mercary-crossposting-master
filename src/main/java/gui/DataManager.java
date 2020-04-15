@@ -41,7 +41,8 @@ public class DataManager {
     }
 
     public void saveSettings(Settings settings) throws IOException {
-        String json = new Gson().toJson(settings);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(settings);
         Files.write(settingsPath,
                 Collections.singletonList(json),
                 StandardCharsets.UTF_8,

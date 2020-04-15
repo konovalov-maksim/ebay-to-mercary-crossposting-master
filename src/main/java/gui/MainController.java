@@ -85,42 +85,11 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             log("Default settings not found");
         }
 
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
-        conditionCol.setCellValueFactory(new PropertyValueFactory<>("conditionName"));
-        ebayPriceCol.setCellValueFactory(new PropertyValueFactory<>("ebayPrice"));
-        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
-        tagsCol.setCellValueFactory(new PropertyValueFactory<>("tagsString"));
-        imagesNumCol.setCellValueFactory(new PropertyValueFactory<>("imagesNum"));
-        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-        categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
-        isValidCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isValid()));
-        isValidCol.setCellFactory(tc -> new CheckBoxTableCell<>());
-        isUploadedCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isUploaded()));
-        isUploadedCol.setCellFactory(tc -> new CheckBoxTableCell<>());
-        idCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
-        titleCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        descriptionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        conditionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        ebayPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        priceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        tagsCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        imagesNumCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        isValidCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
-        isUploadedCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
-        table.setItems(items);
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            showItemParams(table.getSelectionModel().getSelectedItem());
-        });
-        table.setTableMenuButtonVisible(true);
-        new TableContextMenu(table);
-
+        //View components initialization
+        initTable();
         descriptionTa.setWrapText(true);
-
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
         initCategoriesTv();
-
         titleLbl.textProperty().bind(Bindings.concat("Title (")
                 .concat(titleTf.textProperty().length())
                 .concat("/40):"));
@@ -134,6 +103,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         TextAreaDialog dialog = new TextAreaDialog("", "Enter items IDs:","Adding itesm IDs", "");
         Optional result = dialog.showAndWait();
         if (result.isPresent()) {
+            if (result.get().equals("")) return;
             List<String> itemsIds = Arrays.stream(((String) result.get()).split("\\r?\\n"))
                     .distinct()
                     .collect(Collectors.toList());
@@ -142,7 +112,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     }
 
     private void loadItems(List<String> itemsIds) {
-        ItemsLoader itemsLoader = new ItemsLoader(settings.getEbayToken());
+        String ebayToken = settings.getEbayToken();
+        if (ebayToken == null || ebayToken.isEmpty()) {
+            log("Unable to load items: Ebay token not specified");
+            return;
+        }
+        ItemsLoader itemsLoader = new ItemsLoader(ebayToken);
         itemsLoader.setImagesDirPath(Paths.get("").toAbsolutePath().resolve("images"));
         itemsLoader.setLogger(this);
         itemsLoader.setLoadingListener(this);
@@ -152,6 +127,30 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     }
 
     @FXML
+    private void doChecks() {
+        if (items.isEmpty()) {
+            showAlert("No items for uploading", Alert.AlertType.ERROR);
+            return;
+        }
+        if (items.stream().anyMatch(c -> !c.isValid())) {
+            Optional result = showAlert("Parameters of some items are not completely filled. Continue anyway?",
+                    Alert.AlertType.WARNING);
+            if (!result.isPresent() || result.get().equals(ButtonType.CANCEL))
+                return;
+        }
+        if (zipCodeTf.getText().isEmpty()) {
+            showAlert("Zip code not specified!", Alert.AlertType.ERROR);
+            return;
+        }
+        try {
+            settings.setZipCode(zipCodeTf.getText());
+            dataManager.saveSettings(settings);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        uploadItems();
+    }
+
     private void uploadItems() {
         ItemsUploader uploader = new ItemsUploader();
         uploader.setLogger(this);
@@ -164,6 +163,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         }
         uploader.setItems(items);
         uploader.setZipCode(settings.getZipCode());
+        log("Items uploading started");
         new Thread(uploader).start();
     }
 
@@ -254,7 +254,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         try {
             selectedItem.setPrice(Integer.valueOf(priceTf.getText()));
         } catch (NumberFormatException e) {
-            showErrorAlert("Incorrect Price");
+            showAlert("Incorrect Price", Alert.AlertType.ERROR);
         }
         table.refresh();
     }
@@ -275,35 +275,6 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         });
     }
 
-    private List<Cookie> getDebugCookies() {
-        List<Cookie> cookies = new ArrayList<>();
-        Cookie cookie1 = new Cookie.Builder()
-                .name("_mwus.sig")
-                .value("FrmgBD_wsb7B3kH2OgAK1vTXgt0")
-                .domain("mercari.com")
-                .build();
-        Cookie cookie2 = new Cookie.Builder()
-                .name("_MWUS")
-                .value("8j2v86h8j790dmsidi6j8k9q7d")
-                .domain("mercari.com")
-                .build();
-        Cookie cookie3 = new Cookie.Builder()
-                .name("G_ENABLED_IDPS")
-                .value("google")
-                .domain("mercari.com")
-                .build();
-        Cookie cookie4 = new Cookie.Builder()
-                .name("_mwus")
-                .value("eyJhY2Nlc3NUb2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUppSWpvaVpHTTJZVFUxTkdZek9XVTBZalE0TWpFMFpEZ3pORFF4TVRVNVpXSTVObUkxTURreE56WXpZemRoWkdWa05HTTVOV013WldJek9EUTRPV1ZqWkRNeU1UUXhPRGt6TURRNU5EazJOVEJpTmpFNU5EQXhaV1F5T0dZNFl6azVNMkZpTUdOaE1UUmhabU5rTm1FeVpUazNNR016T0dZMVpqUXpZelE1TlRnNFl6aGxOek5pT1dVd09XSmxPREJtWVROa05EVmlOV0ZpWXpCa05XVTRPRFF3TWpoaU1qbGpaR1ZpTldFeE1URmhOVFprT1RBNE9ETXpOVE01TkRka1l6TXpJaXdpWkdGMFlTSTZleUoxZFdsa0lqb2laMmc2ZHpwbVlqTXpNV0prTWkxbE1XVXdMVFJqWmpndE9EUTVZaTB5T0RabVlXWXhZakpqWTJRaUxDSjFjMlZ5U1dRaU9qVXpOamN6TkRJeU9Td2lZV05qWlhOelZHOXJaVzRpT2lJeU9tUTNZek01WTJNM1pUUTVZV1UyTnpVek5HSmlNR1V3TlRNM1lUWTFNR0ppTXpOaE9EVTNNVFprWkRBMVpUbG1aV1ZrWldZNFpURmxNMlZqT0dZMlpqSWlmU3dpWlhod0lqb3hOVGcyT0RjeE5EZzFMQ0pwWVhRaU9qRTFPRFl5TmpZMk9EVjkuV1JXUFQzTnJ0cVFJZFFnZW1ucVNzVFJIaGkzOTRRc0RhMl9rLXZYNW5jbyIsInJlZnJlc2hUb2tlbiI6ImV5SmhiR2NpT2lKSVV6STFOaUlzSW5SNWNDSTZJa3BYVkNKOS5leUppSWpvaVpHTTJZVFUxTkdZek9XVTBZalE0TWpFMFpEZ3pORFF4TVRVNVpXSTVObUkxTURreE56WXpZemRoWkdWa05HTTVOV013WldJek9EUTRPV1ZqWkRNeU1UUXhPRGt6TURRNU5EazJOVEJpTmpFNU5EQXhaV1F5T0dZNFl6azVNMkZpTUdOaE1UUmhabU5rTm1FeVpUazNNR016T0dZMVpqUXpZelE1TlRnNFl6aGxOek5pT1dVd09XSmxPREJtWVROa05EVmlOV0ZpWXpCa05XVTRPRFF3TWpoaU1qbGpaR1ZpTldFeE1URmhOVFprT1RBNE9ETXpOVE01TkRka1l6TXpJaXdpWkdGMFlTSTZleUoxYzJWeVNXUWlPalV6Tmpjek5ESXlPU3dpZFhWcFpDSTZJbWRvT25jNlptSXpNekZpWkRJdFpURmxNQzAwWTJZNExUZzBPV0l0TWpnMlptRm1NV0l5WTJOa0luMHNJbWxoZENJNk1UVTROakkyTmpZNE5YMC51NTFOcmRDckgwUVNIakF3Y0wxU2lZYXVyaTZQd3Z4cExsNzBzWVdZclFrIiwib3B0aW1pemVFeHBlcmltZW50cyI6W3sidmFyaWFudCI6MCwiZXhwZXJpbWVudCI6Im9iSzh4N0RMVFhHRV9ZN25xbEJfX0EiLCJuYW1lIjoibGlrZV90b19yZWdfaG9sZG91dCIsImV4cGlyZWREYXRlIjoxNTk0MDE5Njk2fSx7InZhcmlhbnQiOjAsImV4cGVyaW1lbnQiOiJRRnNxZnFNUlQtU283akNheFh3a0VnIiwibmFtZSI6ImdldF90aGVfYXBwX2FnYWluc3Rfc2VsbF9ub3ciLCJleHBpcmVkRGF0ZSI6MTU5NDAxOTY5Nn0seyJ2YXJpYW50IjoxLCJleHBlcmltZW50IjoiYkhGMGJUZ1ZRVks0ZHlsQWMtRjZ3ZyIsIm5hbWUiOiJsdXhfaXRlbV9iYW5uZXIiLCJleHBpcmVkRGF0ZSI6MTU5NDAxOTY5Nn0seyJ2YXJpYW50IjowLCJleHBlcmltZW50IjoiQXE1aENKVUdTa0t0M0h3Ym5iWlBEUSIsIm5hbWUiOiJmcmVlX3NoaXBwaW5nX3RodW1iIiwiZXhwaXJlZERhdGUiOjE1OTQwMTk2OTZ9LHsidmFyaWFudCI6MiwiZXhwZXJpbWVudCI6IlJFdk11ekxWU2w2c1NhYzdKQUNqcVEiLCJuYW1lIjoicGF5cGFsX2NyZWRpdCIsImV4cGlyZWREYXRlIjoxNTk0MDE5Njk2fSx7InZhcmlhbnQiOjMsImV4cGVyaW1lbnQiOiJhLTdYaHVJdlFpT2RfSEUweFlNeFNRIiwibmFtZSI6ImdldC10aGUtYXBwLWRlc2t0b3AtMjAyMCIsImV4cGlyZWREYXRlIjoxNTk0MDE5Njk2fSx7InZhcmlhbnQiOjMsImV4cGVyaW1lbnQiOiIzcHBkLUxEVlRxR3dzMzFwTkRtcHZRIiwibmFtZSI6ImdldC10aGUtYXBwLW1vYmlsZS0yMDIwIiwiZXhwaXJlZERhdGUiOjE1OTQwMTk2OTZ9XSwiY3NyZlNlY3JldCI6IlNRdGMyMHNsNEEzX18wYUR4MW11SHlRdiIsInVzZXJJZCI6NTM2NzM0MjI5fQ==")
-                .domain("mercari.com")
-                .build();
-        cookies.add(cookie1);
-        cookies.add(cookie2);
-        cookies.add(cookie3);
-        cookies.add(cookie4);
-        return cookies;
-    }
-
     @Override
     public void onItemUploaded(Item item) {
         table.refresh();
@@ -311,7 +282,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @Override
     public void onAllItemsUploaded() {
-        log("--- Items uploading to Mercari completed ---");
+        log("Items uploading to Mercari completed");
     }
 
     @Override
@@ -326,7 +297,40 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @Override
     public void onAllItemsLoaded() {
-        log("--- Items loading from Ebay completed ---");
+        log("Items loading from Ebay completed");
+    }
+
+    private void initTable() {
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+        descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        conditionCol.setCellValueFactory(new PropertyValueFactory<>("conditionName"));
+        ebayPriceCol.setCellValueFactory(new PropertyValueFactory<>("ebayPrice"));
+        priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+        tagsCol.setCellValueFactory(new PropertyValueFactory<>("tagsString"));
+        imagesNumCol.setCellValueFactory(new PropertyValueFactory<>("imagesNum"));
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
+        isValidCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isValid()));
+        isValidCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+        isUploadedCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isUploaded()));
+        isUploadedCol.setCellFactory(tc -> new CheckBoxTableCell<>());
+        idCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        titleCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        descriptionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        conditionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        ebayPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        priceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        tagsCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        imagesNumCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        isValidCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        isUploadedCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        table.setItems(items);
+        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            showItemParams(table.getSelectionModel().getSelectedItem());
+        });
+        table.setTableMenuButtonVisible(true);
+        new TableContextMenu(table);
     }
 
     private void initCategoriesTv() {
@@ -357,12 +361,19 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         return children;
     }
 
-    public static void showErrorAlert( String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private Optional showAlert(String message, Alert.AlertType type) {
+        Alert alert;
+        if (type.equals(Alert.AlertType.WARNING)) {
+            alert = new Alert(type, message, ButtonType.OK, ButtonType.CANCEL);
+            alert.setGraphic(new ImageView("/images/warning.png"));
+            alert.setTitle("Warning");
+        } else {
+            alert = new Alert(type, message);
+            alert.setGraphic(new ImageView("/images/error.png"));
+            alert.setTitle("Error");
+        }
         alert.setHeaderText(null);
-        alert.setGraphic(new ImageView("/images/error.png"));
-        alert.setTitle("Error");
-        alert.setContentText(message);
-        alert.showAndWait();
+        return alert.showAndWait();
     }
+
 }

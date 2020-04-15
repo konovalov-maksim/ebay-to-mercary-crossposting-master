@@ -49,9 +49,9 @@
             </VBox>
         </TitledPane>
         <VBox spacing="5" styleClass="vertical-padding-pane" VBox.vgrow="ALWAYS">
-            <HBox spacing="5">
+            <HBox spacing="5" alignment="CENTER_LEFT">
                 <Button text="Load items from Ebay" onAction="#addItems"/>
-                <Button text="Upload items to Mercari" onAction="#uploadItems"/>
+                <Button text="Upload items to Mercari" onAction="#doChecks"/>
                 <Button text="Login in Mercari" onAction="#openLoginDialog"/>
                 <Label text="ZIP code:"/>
                 <TextField fx:id="zipCodeTf"/>

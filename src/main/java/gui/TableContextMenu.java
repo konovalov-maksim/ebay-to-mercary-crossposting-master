@@ -14,7 +14,7 @@ public class TableContextMenu extends ContextMenu {
         table.getSelectionModel().setCellSelectionEnabled(false);
 
         //Remove Item"
-        MenuItem removeItem = new MenuItem("Remove");
+        MenuItem removeItem = new MenuItem("Remove item");
         ImageView delIcon = new ImageView("/images/remove.png");
         delIcon.setFitHeight(IMG_SIZE);
         delIcon.setFitWidth(IMG_SIZE);

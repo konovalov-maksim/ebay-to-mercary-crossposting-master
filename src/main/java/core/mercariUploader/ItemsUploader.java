@@ -26,7 +26,6 @@ public class ItemsUploader implements Runnable{
     private Headers headers;
     private Logger logger;
     private UploadingListener uploadingListener;
-    private Boolean isLoggedIn;
     private ImagesUploader imagesUploader;
     private String zipCode;
 
@@ -58,20 +57,18 @@ public class ItemsUploader implements Runnable{
                 Response response = client.newCall(request).execute();
                 String responseBody = response.peekBody(Long.MAX_VALUE).string();
                 System.out.println(responseBody);
-                String uploadingStatus = getStatus(responseBody);
-                item.setStatus(uploadingStatus);
-                item.setUploaded(true);
+                extractResult(responseBody, item);
                 uploadingListener.onItemUploaded(item);
             } catch (IOException e) {
                 e.printStackTrace();
-                log(item + " - uploading failed");
+                log(item + " - uploading failed: " + e.getMessage());
                 item.setStatus("Uploading error");
             }
         }
         uploadingListener.onAllItemsUploaded();
     }
 
-    private String getStatus(String responseBody) {
+    private void extractResult(String responseBody, Item item) {
         JsonObject root = new Gson().fromJson(responseBody, JsonObject.class);
         try {
             if (!root.has("errors")) {
@@ -79,17 +76,22 @@ public class ItemsUploader implements Runnable{
                         .get("data").getAsJsonObject()
                         .get("createListing").getAsJsonObject()
                         .get("id").getAsString();
-                return "Successfully uploaded. ID " + id;
+                item.setStatus("Successfully uploaded. ID " + id);
+                item.setUploaded(true);
             } else {
                 String message = root
                         .get("errors").getAsJsonArray()
                         .get(0).getAsJsonObject()
                         .get("message").getAsString();
-                return "Uploading error: " + message;
+                item.setStatus("Uploading error");
+                item.setUploaded(false);
+                log("Item " + item + " - uploading error: " + message);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Uploading error";
+            item.setStatus("Uploading error");
+            item.setUploaded(false);
+            log("Item " + item + " - uploading error: " + e.getMessage());
         }
     }
 
@@ -107,6 +109,7 @@ public class ItemsUploader implements Runnable{
                 .url("https://www.mercari.com/sell/")
                 .headers(headers)
                 .build();
+        boolean isLoggedIn;
         try {
             Response response = client.newCall(request).execute();
             isLoggedIn = response.request().url().toString().equals("https://www.mercari.com/sell/");
