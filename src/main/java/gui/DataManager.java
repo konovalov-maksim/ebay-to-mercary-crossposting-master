@@ -5,7 +5,6 @@ import core.Category;
 import okhttp3.Cookie;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -27,9 +26,10 @@ public class DataManager {
         return instance;
     }
 
+    private Path categoriesPath = Paths.get("").toAbsolutePath().resolve("categories.json");
+
     public List<Category> getCategories() throws IOException, URISyntaxException {
-        URI uri = getClass().getResource("/json/categories.json").toURI();
-        String json = Files.lines(Paths.get(uri)).collect(Collectors.joining());
+        String json = Files.lines(categoriesPath).collect(Collectors.joining());
         Category[] categories = new Gson().fromJson(json, Category[].class);
         return Arrays.asList(categories);
     }

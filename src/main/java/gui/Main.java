@@ -20,7 +20,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"), rb);
         Parent root = loader.load();
         root.getStylesheets().add("/style.css");
-        stage.setTitle("Ebay to Mercari Crosspost Master");
+        stage.setTitle("Ebay to Mercari Crossposting Master");
         stage.getIcons().add(new Image("/images/icon64.png"));
         stage.setScene(new Scene(root));
 
