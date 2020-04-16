@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>konovalov</groupId>
-    <artifactId>ebayToMercaryCopier</artifactId>
+    <artifactId>ebayToMercaryCrosspostingMaster</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -28,7 +28,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>playMarketParser.gui.Main</mainClass>
+                            <mainClass>gui.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
