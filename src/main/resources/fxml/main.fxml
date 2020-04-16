@@ -32,7 +32,8 @@
                             </VBox>
                         </HBox>
                         <Label text="Images:"/>
-                        <ListView fx:id="imagesListView" orientation="HORIZONTAL" VBox.vgrow="ALWAYS" minHeight="160" styleClass="padding-pane"/>
+                        <ListView fx:id="imagesListView" orientation="HORIZONTAL" VBox.vgrow="ALWAYS" minHeight="160"
+                                  styleClass="padding-pane"/>
                     </VBox>
                     <VBox spacing="5">
                         <Label fx:id="descriptionLbl"/>

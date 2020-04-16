@@ -15,7 +15,6 @@ public class TableContextMenu extends ContextMenu {
 
     public TableContextMenu(TableView<Item> table) {
 
-        table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         table.getSelectionModel().setCellSelectionEnabled(false);
 
         //Remove Item"
@@ -57,10 +56,6 @@ public class TableContextMenu extends ContextMenu {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public MenuItem getRemoveItem() {
-        return this.getItems().get(0);
     }
 
 }

@@ -125,7 +125,7 @@ public class ItemsUploader implements Runnable{
         CookieJar cookieJar = new CookieJar() {
             @Override
             public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> list) {
-                //TODO implement cookies saving
+                //No need to save cookies while uploading items
             }
 
             @NotNull

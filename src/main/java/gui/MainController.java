@@ -236,7 +236,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         priceTf.clear();
         descriptionTa.clear();
         imagesFiles.clear();
-        conditionCb.setValue(new Condition(1));
+        conditionCb.setValue(null);
         categoriesTv.getSelectionModel().clearSelection();
         tag0Tf.clear();
         tag1Tf.clear();
@@ -245,16 +245,24 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @FXML
     private void applyParams() {
-        Item selectedItem = table.getSelectionModel().getSelectedItem();
-        if (selectedItem == null) return;
+        List<Item> selectedItems = table.getSelectionModel().getSelectedItems();
+        if (selectedItems.size() == 1) {
+            applyForOne(selectedItems.get(0));
+        } else if (selectedItems.size() > 1) {
+            applyForAll(selectedItems);
+        }
+    }
+
+    private void applyForOne(Item selectedItem) {
         selectedItem.setCondition(conditionCb.getValue());
         selectedItem.setTitle(titleTf.getText());
         selectedItem.setDescription(descriptionTa.getText());
         TreeItem<Category> categoryItem = categoriesTv.getSelectionModel().getSelectedItem();
+        if (categoryItem != null) selectedItem.setCategory(categoryItem.getValue());
+        else selectedItem.setCategory(null);
         selectedItem.setTag0(tag0Tf.getText());
         selectedItem.setTag1(tag1Tf.getText());
         selectedItem.setTag2(tag2Tf.getText());
-        if (categoryItem != null) selectedItem.setCategory(categoryItem.getValue());
         try {
             selectedItem.setPrice(Integer.valueOf(priceTf.getText()));
         } catch (NumberFormatException e) {
@@ -262,6 +270,36 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         }
         selectedItem.getImages().clear();
         selectedItem.getImages().addAll(imagesFiles);
+        table.refresh();
+    }
+
+    private void applyForAll(List<Item> selectedItems) {
+        Integer price = null;
+        if (priceTf.getText() != null && !priceTf.getText().isEmpty()) {
+            try {
+                price = Integer.valueOf(priceTf.getText());
+            } catch (NumberFormatException e) {
+                showAlert("Incorrect Price", Alert.AlertType.ERROR);
+            }
+        }
+        for (Item selectedItem : selectedItems) {
+            if (conditionCb.getValue() != null)
+                selectedItem.setCondition(conditionCb.getValue());
+            if (titleTf.getText() != null && !titleTf.getText().isEmpty())
+                selectedItem.setTitle(titleTf.getText());
+            if (descriptionTa.getText() != null && !descriptionTa.getText().isEmpty())
+                selectedItem.setDescription(descriptionTa.getText());
+            if (categoriesTv.getSelectionModel().getSelectedItem() != null)
+                selectedItem.setCategory(categoriesTv.getSelectionModel().getSelectedItem().getValue());
+            if (tag0Tf.getText() != null && !tag0Tf.getText().isEmpty())
+                selectedItem.setTag0(tag0Tf.getText());
+            if (tag1Tf.getText() != null && !tag1Tf.getText().isEmpty())
+                selectedItem.setTag1(tag1Tf.getText());
+            if (tag2Tf.getText() != null && !tag2Tf.getText().isEmpty())
+                selectedItem.setTag2(tag2Tf.getText());
+            if (price != null)
+                selectedItem.setPrice(price);
+        }
         table.refresh();
     }
 
@@ -338,10 +376,14 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         isValidCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         isUploadedCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         table.setItems(items);
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-            showItemParams(table.getSelectionModel().getSelectedItem())
-        );
+        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (table.getSelectionModel().getSelectedItems().size() == 1)
+                showItemParams(table.getSelectionModel().getSelectedItem());
+            else
+                clearItemParamsFields();
+        });
         table.setTableMenuButtonVisible(true);
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         new TableContextMenu(table);
     }
 

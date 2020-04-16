@@ -28,3 +28,7 @@
 .number-column {
     -fx-alignment: CENTER-RIGHT;
 }
+
+ListView .list-cell {
+    -fx-background-color: white;
+}
