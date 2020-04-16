@@ -19,7 +19,10 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
 import okhttp3.Cookie;
 
@@ -40,7 +43,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @FXML private Label titleLbl;
     @FXML private Label descriptionLbl;
-    @FXML private HBox imagesHb;
+    @FXML private ListView<File> imagesListView;
     @FXML private TextField titleTf;
     @FXML private TextField priceTf;
     @FXML private TextField tag0Tf;
@@ -49,7 +52,6 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private TextArea descriptionTa;
     @FXML private ComboBox<Condition> conditionCb;
     @FXML private TreeView<Category> categoriesTv;
-    @FXML private ScrollPane imagesSp;
 
     @FXML private TextField zipCodeTf;
 
@@ -68,12 +70,14 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private TableColumn<Item, Boolean> isValidCol;
     @FXML private TableColumn<Item, Boolean> isUploadedCol;
 
+    private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
+
     private DataManager dataManager = DataManager.getInstance();
     private Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
     private ObservableList<Item> items = FXCollections.observableArrayList();
+    private ObservableList<File> imagesFiles = FXCollections.observableArrayList();
 
     private Stage loginStage = new Stage();
-
     private Settings settings;
 
     public void initialize(URL location, ResourceBundle resources) {
@@ -87,9 +91,10 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
         //View components initialization
         initTable();
+        initCategoriesTv();
+        initImagesListView();
         descriptionTa.setWrapText(true);
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
-        initCategoriesTv();
         titleLbl.textProperty().bind(Bindings.concat("Title (")
                 .concat(titleTf.textProperty().length())
                 .concat("/40):"));
@@ -207,7 +212,6 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         titleTf.setText(item.getTitle());
         priceTf.setText(String.valueOf(item.getPrice()));
         descriptionTa.setText(item.getDescription());
-        imagesHb.getChildren().clear();
         conditionCb.setValue(item.getCondition());
 
         TreeItem<Category> categoryItem = categoryItems.get(item.getCategoryId());
@@ -221,26 +225,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         tag1Tf.setText(item.getTag1());
         tag2Tf.setText(item.getTag2());
 
-        for (File file : item.getImages()) {
-            try (InputStream imageIs = new FileInputStream(file) ) {
-                Image image = new Image(imageIs);
-                ImageView imageView = new ImageView(image);
-                imageView.fitHeightProperty().bind(imagesSp.heightProperty().subtract(35));
-                imageView.setPreserveRatio(true);
-                imagesHb.getChildren().add(imageView);
-                imageView.setOnMouseClicked(event -> {
-                    if (event.getClickCount() == 2) {
-                        imagesHb.getChildren().remove(imageView);
-                        item.getImages().remove(file);
-                        table.refresh();
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                log(item + " - unable to open item image");
-                item.getImages().remove(file);
-            }
-        }
+        imagesFiles.clear();
+        imagesFiles.addAll(item.getImages());
+        imagesListView.refresh();
     }
 
     private void clearItemParamsFields() {
@@ -248,13 +235,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         titleTf.clear();
         priceTf.clear();
         descriptionTa.clear();
-        imagesHb.getChildren().clear();
+        imagesFiles.clear();
         conditionCb.setValue(new Condition(1));
         categoriesTv.getSelectionModel().clearSelection();
         tag0Tf.clear();
         tag1Tf.clear();
         tag2Tf.clear();
-        imagesHb.getChildren().clear();
     }
 
     @FXML
@@ -274,6 +260,8 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         } catch (NumberFormatException e) {
             showAlert("Incorrect Price", Alert.AlertType.ERROR);
         }
+        selectedItem.getImages().clear();
+        selectedItem.getImages().addAll(imagesFiles);
         table.refresh();
     }
 
@@ -344,7 +332,9 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         ebayPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
         priceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
         tagsCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        imagesNumCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        imagesNumCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        statusCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        categoryCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
         isValidCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         isUploadedCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         table.setItems(items);
@@ -366,6 +356,73 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             e.printStackTrace();
             log("Unable to load categories list");
         }
+    }
+
+    private void initImagesListView() {
+        imagesListView.setItems(imagesFiles);
+        imagesListView.setCellFactory(param -> new ListCell<File>() {
+            @Override
+            protected void updateItem(File imageFile, boolean empty) {
+                super.updateItem(imageFile, empty);
+                if (imageFile == null) {
+                    this.setGraphic(null);
+                    return;
+                }
+                try (InputStream imageIs = new FileInputStream(imageFile) ) {
+                    Image image = new Image(imageIs);
+                    ImageView imageView = new ImageView(image);
+                    imageView.fitHeightProperty().bind(imagesListView.heightProperty().subtract(40));
+                    imageView.setPreserveRatio(true);
+                    this.setGraphic(imageView);
+
+                    this.setOnMouseClicked(event -> {
+                        if (event.getClickCount() == 2) {
+                            imagesFiles.remove(imageFile);
+                            imagesListView.refresh();
+                        }
+                    });
+                    this.setOnDragDetected(event -> {
+                        if (!this.isEmpty()) {
+                            Integer index = this.getIndex();
+                            Dragboard db = this.startDragAndDrop(TransferMode.MOVE);
+                            db.setDragView(this.snapshot(null, null));
+                            ClipboardContent cc = new ClipboardContent();
+                            cc.put(SERIALIZED_MIME_TYPE, index);
+                            db.setContent(cc);
+                            event.consume();
+                        }
+                    });
+                    this.setOnDragOver(event -> {
+                        Dragboard db = event.getDragboard();
+                        if (db.hasContent(SERIALIZED_MIME_TYPE)) {
+                            if (this.getIndex() != (Integer) db.getContent(SERIALIZED_MIME_TYPE)) {
+                                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                                event.consume();
+                            }
+                        }
+                    });
+                    this.setOnDragDropped(event -> {
+                        Dragboard db = event.getDragboard();
+                        if (db.hasContent(SERIALIZED_MIME_TYPE)) {
+                            int draggedIndex = (Integer) db.getContent(SERIALIZED_MIME_TYPE);
+                            File draggedPerson = imagesFiles.remove(draggedIndex);
+                            int dropIndex ;
+                            if (isEmpty()) {
+                                dropIndex = imagesFiles.size() ;
+                            } else {
+                                dropIndex = this.getIndex();
+                            }
+                            imagesFiles.add(dropIndex, draggedPerson);
+                            event.setDropCompleted(true);
+                            imagesListView.getSelectionModel().select(dropIndex);
+                            event.consume();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private List<TreeItem<Category>> findChildren(Integer categoryId, List<Category> categories) {
