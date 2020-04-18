@@ -178,7 +178,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             cookies = dataManager.loadCookies();
         } catch (IOException e) {
             e.printStackTrace();
-            log("Error: unable to load cookies");
+            log("Unable to load cookies");
         }
         return cookies;
     }
