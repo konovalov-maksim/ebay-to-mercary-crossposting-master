@@ -4,4 +4,5 @@
 *.iml
 /images
 *.txt
+*.bat
 cookies.json
