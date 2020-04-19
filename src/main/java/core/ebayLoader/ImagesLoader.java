@@ -5,6 +5,7 @@ import core.Logger;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -27,6 +28,8 @@ public class ImagesLoader {
         this.client = client;
         this.item = item;
         this.path = path;
+        File imagesDir = path.toFile();
+        if (!imagesDir.exists()) imagesDir.mkdir();
     }
 
     public void loadImages() {
