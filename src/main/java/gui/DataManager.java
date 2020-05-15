@@ -4,6 +4,7 @@ import com.google.gson.*;
 import core.Category;
 import okhttp3.Cookie;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -86,5 +87,13 @@ public class DataManager {
                 gson.toJson(cookies).getBytes(StandardCharsets.UTF_8),
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    public void removeImages(List<File> files) {
+        for (File file : files) {
+            if (file.exists() && file.canWrite()) {
+                file.delete();
+            }
+        }
     }
 }

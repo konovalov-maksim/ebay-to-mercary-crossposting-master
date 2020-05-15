@@ -143,7 +143,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             if (!result.isPresent() || result.get().equals(ButtonType.CANCEL))
                 return;
         }
-        if (zipCodeTf.getText().isEmpty()) {
+        if (zipCodeTf.getText() == null || zipCodeTf.getText().isEmpty()) {
             showAlert("Zip code not specified!", Alert.AlertType.ERROR);
             return;
         }
@@ -309,6 +309,13 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         table.refresh();
     }
 
+    private void clearImages() {
+        List<File> images = new ArrayList<>();
+        items.forEach(i -> images.addAll(i.getImages()));
+        dataManager.removeImages(images);
+        clearItems();
+    }
+
     @Override
     public void log(String message) {
         String curTime = new SimpleDateFormat("HH:mm:ss:SSS").format(new Date());
@@ -331,6 +338,10 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @Override
     public void onAllItemsUploaded() {
         log("Items uploading to Mercari completed");
+        Optional result = showAlert("Items uploading complete. Do you want to delete downloaded images?",
+                Alert.AlertType.CONFIRMATION);
+        if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) return;
+        clearImages();
     }
 
     @Override
@@ -484,7 +495,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     private Optional showAlert(String message, Alert.AlertType type) {
         Alert alert;
-        if (type.equals(Alert.AlertType.WARNING)) {
+        if (type.equals(Alert.AlertType.WARNING) || type.equals(Alert.AlertType.CONFIRMATION)) {
             alert = new Alert(type, message, ButtonType.OK, ButtonType.CANCEL);
             alert.setGraphic(new ImageView("/images/warning.png"));
             alert.setTitle("Warning");
