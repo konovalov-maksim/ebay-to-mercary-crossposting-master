@@ -305,15 +305,11 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     @FXML
     private void clearItems() {
-        items.clear();
-        table.refresh();
-    }
-
-    private void clearImages() {
         List<File> images = new ArrayList<>();
         items.forEach(i -> images.addAll(i.getImages()));
         dataManager.removeImages(images);
-        clearItems();
+        items.clear();
+        table.refresh();
     }
 
     @Override
@@ -341,7 +337,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         Optional result = showAlert("Items uploading complete. Do you want to delete downloaded images?",
                 Alert.AlertType.CONFIRMATION);
         if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) return;
-        clearImages();
+        clearItems();
     }
 
     @Override
