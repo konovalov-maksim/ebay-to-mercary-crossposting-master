@@ -14,7 +14,10 @@
                 <SplitPane prefWidth="Infinity" dividerPositions="0.4, 0.8">
                     <VBox spacing="5" minWidth="300">
                         <Label fx:id="titleLbl"/>
-                        <TextField fx:id="titleTf"/>
+                        <HBox spacing="5">
+                            <TextField fx:id="titleTf" HBox.hgrow="ALWAYS"/>
+                            <Button text="Trim" onAction="#trimTitle"/>
+                        </HBox>
                         <Label text="Tags:"/>
                         <HBox spacing="5">
                             <TextField fx:id="tag0Tf"/>

@@ -312,6 +312,20 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         table.refresh();
     }
 
+    @FXML
+    private void trimTitle() {
+        final int titleLimit = 40;
+        String title = titleTf.getText();
+        if (title.length() <= titleLimit) return;
+        for (int i = titleLimit; i > 0; i--) {
+            if (title.charAt(i) == ' ') {
+                titleTf.setText(title.substring(0, i));
+                return;
+            }
+        }
+        titleTf.setText("");
+    }
+
     @Override
     public void log(String message) {
         String curTime = new SimpleDateFormat("HH:mm:ss:SSS").format(new Date());
