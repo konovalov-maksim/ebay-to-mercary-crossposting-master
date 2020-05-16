@@ -12,7 +12,9 @@ public class Item {
     private String title;
     private String description;
     private Double ebayPrice;
+    private Double ebayShippingPrice;
     private Integer price;
+    private Integer shippingPrice;
     private List<String> imagesUrls = new ArrayList<>();
     private List<File> images = new ArrayList<>();
     private String[] tags = new String[]{null, null, null};
@@ -33,11 +35,15 @@ public class Item {
     public boolean isValid() {
         if (title == null || title.length() == 0 || title.length() > 40 ) return false;
         if (description == null || description.length() == 0 || description.length() > 1000 ) return false;
-        if (price == null || price < 5) return false;
+        if (getFinalPrice() < 5) return false;
         if (images == null || images.isEmpty() || images.size() > 12) return false;
         if (condition == null) return false;
         if (category == null) return false;
         return true;
+    }
+
+    public Integer getFinalPrice() {
+        return getPrice() + getShippingPrice();
     }
 
     @Override
@@ -148,7 +154,7 @@ public class Item {
     }
 
     public Integer getPrice() {
-        return price;
+        return price != null ? price : 0;
     }
 
     public void setPrice(Integer price) {
@@ -201,5 +207,21 @@ public class Item {
 
     public void setMercariUrl(String mercariUrl) {
         this.mercariUrl = mercariUrl;
+    }
+
+    public Double getEbayShippingPrice() {
+        return ebayShippingPrice;
+    }
+
+    public void setEbayShippingPrice(Double ebayShippingPrice) {
+        this.ebayShippingPrice = ebayShippingPrice;
+    }
+
+    public Integer getShippingPrice() {
+        return shippingPrice != null ? shippingPrice : 0;
+    }
+
+    public void setShippingPrice(Integer shippingPrice) {
+        this.shippingPrice = shippingPrice;
     }
 }

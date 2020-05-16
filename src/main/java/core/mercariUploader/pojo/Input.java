@@ -13,17 +13,17 @@ public class Input {
     public Input(Item item, List<String> imageIds, String zipCode) {
         this.photoIds = imageIds;
         this.name = item.getTitle();
-        this.price = item.getPrice() * 100;
+        this.price = item.getFinalPrice() * 100;
         this.description = item.getDescription();
         this.categoryId = item.getCategoryId();
         this.conditionId = item.getConditionId();
         this.zipCode = zipCode;
         this.tags = item.getTags();
-        this.salesFee = item.getPrice() * 10;
+        this.salesFee = item.getFinalPrice() * 10;
         this.shippingPayerId = 2;
         this.shippingClassIds = Arrays.asList(0);
         this.isAutoPriceDrop = false;
-        this.minPriceForAutoPriceDrop = item.getPrice() * 80;
+        this.minPriceForAutoPriceDrop = item.getFinalPrice() * 80;
     }
 
     @SerializedName("photoIds")

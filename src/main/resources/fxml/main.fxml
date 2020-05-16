@@ -33,6 +33,14 @@
                                 <Label text="Price, $:"/>
                                 <TextField fx:id="priceTf"/>
                             </VBox>
+                            <VBox>
+                                <Label text="Shipping price, $:"/>
+                                <TextField fx:id="shippingPriceTf"/>
+                            </VBox>
+                            <VBox>
+                                <Label text="Final price, $:"/>
+                                <TextField fx:id="finalPriceTf" editable="false" disable="true"/>
+                            </VBox>
                         </HBox>
                         <Label text="Images:"/>
                         <ListView fx:id="imagesListView" orientation="HORIZONTAL" VBox.vgrow="ALWAYS" minHeight="160"
@@ -67,7 +75,10 @@
                     <TableColumn fx:id="conditionCol" text="Condition"/>
                     <TableColumn fx:id="categoryCol" text="Category"/>
                     <TableColumn fx:id="ebayPriceCol" text="Ebay Price, $" styleClass="number-column"/>
+                    <TableColumn fx:id="ebayShippingPriceCol" text="Ebay shipping Price, $" styleClass="number-column"/>
                     <TableColumn fx:id="priceCol" text="Price, $" styleClass="number-column"/>
+                    <TableColumn fx:id="shippingPriceCol" text="Shipping price, $" styleClass="number-column"/>
+                    <TableColumn fx:id="finalPriceCol" text="Final price, $" styleClass="number-column"/>
                     <TableColumn fx:id="tagsCol" text="Tags"/>
                     <TableColumn fx:id="imagesNumCol" text="Images number" styleClass="number-column"/>
                     <TableColumn fx:id="statusCol" text="Status"/>

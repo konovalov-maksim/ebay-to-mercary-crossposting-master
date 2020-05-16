@@ -7,6 +7,7 @@ import core.mercariUploader.ItemsUploader;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -46,6 +47,8 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private ListView<File> imagesListView;
     @FXML private TextField titleTf;
     @FXML private TextField priceTf;
+    @FXML private TextField shippingPriceTf;
+    @FXML private TextField finalPriceTf;
     @FXML private TextField tag0Tf;
     @FXML private TextField tag1Tf;
     @FXML private TextField tag2Tf;
@@ -63,7 +66,10 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML private TableColumn<Item, String> categoryCol;
     @FXML private TableColumn<Item, String> conditionCol;
     @FXML private TableColumn<Item, Double> ebayPriceCol;
+    @FXML private TableColumn<Item, Double> ebayShippingPriceCol;
     @FXML private TableColumn<Item, Integer> priceCol;
+    @FXML private TableColumn<Item, Integer> shippingPriceCol;
+    @FXML private TableColumn<Item, Integer> finalPriceCol;
     @FXML private TableColumn<Item, String> tagsCol;
     @FXML private TableColumn<Item, Integer> imagesNumCol;
     @FXML private TableColumn<Item, String> statusCol;
@@ -93,6 +99,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         initTable();
         initCategoriesTv();
         initImagesListView();
+        initPriceTfs();
         descriptionTa.setWrapText(true);
         conditionCb.setItems(FXCollections.observableArrayList(Condition.getAllConditions()));
         titleLbl.textProperty().bind(Bindings.concat("Title (")
@@ -211,6 +218,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         itemParamsTp.setExpanded(true);
         titleTf.setText(item.getTitle());
         priceTf.setText(String.valueOf(item.getPrice()));
+        shippingPriceTf.setText(String.valueOf(item.getShippingPrice()));
         descriptionTa.setText(item.getDescription());
         conditionCb.setValue(item.getCondition());
 
@@ -234,6 +242,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         itemParamsTp.setExpanded(true);
         titleTf.clear();
         priceTf.clear();
+        shippingPriceTf.clear();
         descriptionTa.clear();
         imagesFiles.clear();
         conditionCb.setValue(null);
@@ -266,7 +275,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         try {
             selectedItem.setPrice(Integer.valueOf(priceTf.getText()));
         } catch (NumberFormatException e) {
-            showAlert("Incorrect Price", Alert.AlertType.ERROR);
+            showAlert("Incorrect price!", Alert.AlertType.ERROR);
+        }
+        try {
+            selectedItem.setShippingPrice(Integer.valueOf(shippingPriceTf.getText()));
+        } catch (NumberFormatException e) {
+            showAlert("Incorrect shipping price!", Alert.AlertType.ERROR);
         }
         selectedItem.getImages().clear();
         selectedItem.getImages().addAll(imagesFiles);
@@ -279,7 +293,15 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             try {
                 price = Integer.valueOf(priceTf.getText());
             } catch (NumberFormatException e) {
-                showAlert("Incorrect Price", Alert.AlertType.ERROR);
+                showAlert("Incorrect price!", Alert.AlertType.ERROR);
+            }
+        }
+        Integer shippingPrice = null;
+        if (shippingPriceTf.getText() != null && !shippingPriceTf.getText().isEmpty()) {
+            try {
+                shippingPrice = Integer.valueOf(shippingPriceTf.getText());
+            } catch (NumberFormatException e) {
+                showAlert("Incorrect shipping price!", Alert.AlertType.ERROR);
             }
         }
         for (Item selectedItem : selectedItems) {
@@ -299,6 +321,8 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
                 selectedItem.setTag2(tag2Tf.getText());
             if (price != null)
                 selectedItem.setPrice(price);
+            if (shippingPrice != null)
+                selectedItem.setShippingPrice(shippingPrice);
         }
         table.refresh();
     }
@@ -375,7 +399,10 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("description"));
         conditionCol.setCellValueFactory(new PropertyValueFactory<>("conditionName"));
         ebayPriceCol.setCellValueFactory(new PropertyValueFactory<>("ebayPrice"));
+        ebayShippingPriceCol.setCellValueFactory(new PropertyValueFactory<>("ebayShippingPrice"));
         priceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+        shippingPriceCol.setCellValueFactory(new PropertyValueFactory<>("shippingPrice"));
+        finalPriceCol.setCellValueFactory(new PropertyValueFactory<>("finalPrice"));
         tagsCol.setCellValueFactory(new PropertyValueFactory<>("tagsString"));
         imagesNumCol.setCellValueFactory(new PropertyValueFactory<>("imagesNum"));
         statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -387,9 +414,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
         idCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         titleCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
         descriptionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        conditionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        ebayPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
-        priceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
+        conditionCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        ebayPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        ebayShippingPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        priceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        shippingPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
+        finalPriceCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         tagsCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
         imagesNumCol.prefWidthProperty().bind(table.widthProperty().multiply(0.05));
         statusCol.prefWidthProperty().bind(table.widthProperty().multiply(0.1));
@@ -419,6 +449,22 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
             e.printStackTrace();
             log("Unable to load categories list");
         }
+    }
+
+    private void initPriceTfs() {
+        ChangeListener<String> priceChangeListener = (observable, oldValue, newValue) -> {
+            int price = 0;
+            int shippingPrice = 0;
+            try {
+                if (!priceTf.getText().isEmpty()) price = Integer.parseInt(priceTf.getText());
+                if (!shippingPriceTf.getText().isEmpty()) shippingPrice = Integer.parseInt(shippingPriceTf.getText());
+            } catch (Exception e) {
+                return;
+            }
+            finalPriceTf.setText(String.valueOf(price + shippingPrice));
+        };
+        priceTf.textProperty().addListener(priceChangeListener);
+        shippingPriceTf.textProperty().addListener(priceChangeListener);
     }
 
     private void initImagesListView() {
