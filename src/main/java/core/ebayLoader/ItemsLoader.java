@@ -6,6 +6,7 @@ import core.Item;
 import core.Logger;
 import core.ebayLoader.pojo.EbayItem;
 import core.ebayLoader.pojo.EbayResponse;
+import core.ebayLoader.pojo.ShippingServiceCost;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -91,6 +92,10 @@ public class ItemsLoader implements Runnable {
         Double ebayPrice = ebayItem.getConvertedCurrentPrice().getValue();
         item.setEbayPrice(ebayPrice);
         item.setPrice((int) Math.round(ebayPrice));
+        ShippingServiceCost listedShippingServiceCost = ebayItem.getShippingCostSummary().getShippingServiceCost();
+        double ebayShippingPrice = listedShippingServiceCost != null ? listedShippingServiceCost.getValue() : 0d;
+        item.setEbayShippingPrice(ebayShippingPrice);
+        item.setShippingPrice((int) Math.round(ebayShippingPrice));
         String description = Jsoup.parse(ebayItem.getDescription()).text();
         item.setDescription(description);
         Integer conditionId = ebayItem.getConditionID();
@@ -127,7 +132,7 @@ public class ItemsLoader implements Runnable {
                 .addQueryParameter("appid", TOKEN)
                 .addQueryParameter("siteid", "0")
                 .addQueryParameter("version", "967")
-                .addQueryParameter("includeSelector", "Description")
+                .addQueryParameter("includeSelector", "Description,ShippingCosts")
                 .addQueryParameter("ItemID", itemsIdsCommaSep)
                 .build();
     }

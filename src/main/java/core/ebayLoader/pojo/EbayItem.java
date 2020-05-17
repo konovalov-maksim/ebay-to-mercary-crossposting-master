@@ -73,6 +73,9 @@ public class EbayItem {
     @SerializedName("GalleryURL")
     @Expose
     private String galleryURL;
+    @SerializedName("ShippingCostSummary")
+    @Expose
+    private ShippingCostSummary shippingCostSummary;
 
     public String getDescription() {
         return description;
@@ -248,5 +251,13 @@ public class EbayItem {
 
     public void setGalleryURL(String galleryURL) {
         this.galleryURL = galleryURL;
+    }
+
+    public ShippingCostSummary getShippingCostSummary() {
+        return shippingCostSummary;
+    }
+
+    public void setShippingCostSummary(ShippingCostSummary shippingCostSummary) {
+        this.shippingCostSummary = shippingCostSummary;
     }
 }
