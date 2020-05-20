@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gui.ItemsInputController"
+            prefHeight="400.0" prefWidth="600.0">
+    <HBox spacing="10">
+        <Label text="Seller name:"/>
+        <TextField fx:id="sellerNameTf"/>
+        <Button text="Find items" onAction="#findItems"/>
+    </HBox>
+    <TableView fx:id="categoriesTable">
+        <columns>
+            <TableColumn fx:id="categoryNameCol" text="Category"/>
+            <TableColumn fx:id="itemsCountCol" text="Items"/>
+        </columns>
+    </TableView>
+
+</VBox>

@@ -60,7 +60,8 @@
         </TitledPane>
         <VBox spacing="5" styleClass="vertical-padding-pane" VBox.vgrow="ALWAYS">
             <HBox spacing="5" alignment="CENTER_LEFT">
-                <Button text="Load items from Ebay" onAction="#addItems"/>
+                <Button text="Load items by ID" onAction="#addItemsById"/>
+                <Button text="Load items by seller" onAction="#addItemsBySeller"/>
                 <Button text="Upload items to Mercari" onAction="#doChecks"/>
                 <Button text="Clear list" onAction="#clearItems"/>
                 <Button text="Log in to Mercari" onAction="#openLoginDialog"/>

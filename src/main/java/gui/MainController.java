@@ -111,7 +111,7 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     }
 
     @FXML
-    private void addItems() {
+    private void addItemsById() {
         TextAreaDialog dialog = new TextAreaDialog("", "Enter items IDs:","Adding itesm IDs", "");
         Optional result = dialog.showAndWait();
         if (result.isPresent()) {
@@ -121,6 +121,19 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
                     .collect(Collectors.toList());
             if (!itemsIds.isEmpty()) loadItems(itemsIds);
         }
+    }
+
+    @FXML
+    private void addItemsBySeller() throws IOException {
+        Stage stage = new Stage();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/items_input.fxml"));
+        Parent root = loader.load();
+        root.getStylesheets().add("/style.css");
+        stage.setTitle("Ebay to Mercari Crossposting Master");
+        stage.getIcons().add(new Image("/images/icon64.png"));
+        stage.setScene(new Scene(root));
+
+        stage.show();
     }
 
     private void loadItems(List<String> itemsIds) {
