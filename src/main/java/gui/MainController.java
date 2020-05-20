@@ -124,7 +124,7 @@ public class MainController implements
             List<String> itemsIds = Arrays.stream(((String) result.get()).split("\\r?\\n"))
                     .distinct()
                     .collect(Collectors.toList());
-            if (!itemsIds.isEmpty()) loadItems(itemsIds);
+            loadItems(itemsIds);
         }
     }
 
@@ -149,6 +149,7 @@ public class MainController implements
     }
 
     private void loadItems(List<String> itemsIds) {
+        if (itemsIds.isEmpty()) return;
         String ebayToken = settings.getEbayToken();
         if (ebayToken == null || ebayToken.isEmpty()) {
             log("Unable to load items: Ebay token not specified");
@@ -397,10 +398,12 @@ public class MainController implements
     @Override
     public void onAllItemsUploaded() {
         log("Items uploading to Mercari completed");
-        Optional result = showAlert("Items uploading complete. Do you want to delete downloaded images?",
-                Alert.AlertType.CONFIRMATION);
-        if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) return;
-        clearItems();
+        Platform.runLater(() -> {
+            Optional result = showAlert("Items uploading is complete. Do you want to delete downloaded images?",
+                    Alert.AlertType.CONFIRMATION);
+            if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) return;
+            clearItems();
+        });
     }
 
     @Override
