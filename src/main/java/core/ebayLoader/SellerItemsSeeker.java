@@ -38,6 +38,7 @@ public class SellerItemsSeeker implements Runnable {
     }
 
     public void run() {
+        log("Seeking for seller's items...");
         loadSellerItems(1);
     }
 

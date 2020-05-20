@@ -38,7 +38,12 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MainController implements Initializable, Logger, ItemsUploader.UploadingListener, LoadingListener {
+public class MainController implements
+        Initializable,
+        Logger,
+        ItemsUploader.UploadingListener,
+        LoadingListener,
+        SellerItemsInputController.ItemsInputCallback {
 
     @FXML private TitledPane itemParamsTp;
 
@@ -78,12 +83,12 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
 
     private static final DataFormat SERIALIZED_MIME_TYPE = new DataFormat("application/x-java-serialized-object");
 
-    private DataManager dataManager = DataManager.getInstance();
-    private Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
-    private ObservableList<Item> items = FXCollections.observableArrayList();
-    private ObservableList<File> imagesFiles = FXCollections.observableArrayList();
+    private final DataManager dataManager = DataManager.getInstance();
+    private final Map<Integer, TreeItem<Category>> categoryItems = new HashMap<>();
+    private final ObservableList<Item> items = FXCollections.observableArrayList();
+    private final ObservableList<File> imagesFiles = FXCollections.observableArrayList();
 
-    private Stage loginStage = new Stage();
+    private final Stage loginStage = new Stage();
     private Settings settings;
 
     public void initialize(URL location, ResourceBundle resources) {
@@ -126,14 +131,21 @@ public class MainController implements Initializable, Logger, ItemsUploader.Uplo
     @FXML
     private void addItemsBySeller() throws IOException {
         Stage stage = new Stage();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/items_input.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/seller_items_input.fxml"));
         Parent root = loader.load();
         root.getStylesheets().add("/style.css");
         stage.setTitle("Ebay to Mercari Crossposting Master");
         stage.getIcons().add(new Image("/images/icon64.png"));
         stage.setScene(new Scene(root));
-
+        SellerItemsInputController sellerItemsInputController = loader.getController();
+        sellerItemsInputController.setLogger(this);
+        sellerItemsInputController.setItemsInputCallback(this);
         stage.show();
+    }
+
+    @Override
+    public void onItemsIdsReceived(List<String> itemsIds) {
+        loadItems(itemsIds);
     }
 
     private void loadItems(List<String> itemsIds) {

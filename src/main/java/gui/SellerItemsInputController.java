@@ -4,29 +4,30 @@ import core.Logger;
 import core.ebayLoader.SellerItemsSeeker;
 import core.ebayLoader.pojo.SellerCategory;
 import core.ebayLoader.pojo.SellerItem;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class ItemsInputController implements Initializable, SellerItemsSeeker.SellerItemsSeekingListener {
+public class SellerItemsInputController implements Initializable, SellerItemsSeeker.SellerItemsSeekingListener {
 
     @FXML private TextField sellerNameTf;
+    @FXML private ProgressBar progressBar;
 
     @FXML private TableView<SellerCategory> categoriesTable;
     @FXML private TableColumn<SellerCategory, String> categoryNameCol;
     @FXML private TableColumn<SellerCategory, Integer> itemsCountCol;
 
     private final ObservableList<SellerCategory> categories = FXCollections.observableArrayList();
-    private final List<SellerItem> sellerItems = new ArrayList<>();
 
     private final DataManager dataManager = DataManager.getInstance();
     private Settings settings;
@@ -42,11 +43,13 @@ public class ItemsInputController implements Initializable, SellerItemsSeeker.Se
             log("Unable to load settings");
         }
 
+        progressBar.setProgress(0);
         categoriesTable.setItems(categories);
         categoryNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         itemsCountCol.setCellValueFactory(new PropertyValueFactory<>("itemsCount"));
         categoryNameCol.prefWidthProperty().bind(categoriesTable.widthProperty().multiply(0.8));
         itemsCountCol.prefWidthProperty().bind(categoriesTable.widthProperty().multiply(0.2));
+        categoriesTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     @FXML
@@ -59,14 +62,13 @@ public class ItemsInputController implements Initializable, SellerItemsSeeker.Se
         SellerItemsSeeker sellerItemsSeeker = new SellerItemsSeeker(token, sellerName, this);
         sellerItemsSeeker.setLogger(logger);
         new Thread(sellerItemsSeeker).start();
-        //TODO show progressBar here
+        progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
     }
 
     @Override
     public void onSearchingComplete(List<SellerItem> sellerItems) {
-        //TODO hide progressBar here
-        log("Loaded " + sellerItems.size() + " items");
-        this.sellerItems.addAll(sellerItems);
+        Platform.runLater(() -> progressBar.setProgress(1));
+        log(sellerItems.size() + " items found");
         sortByCategories(sellerItems);
         categoriesTable.refresh();
     }
@@ -85,6 +87,28 @@ public class ItemsInputController implements Initializable, SellerItemsSeeker.Se
         }
     }
 
+    @FXML
+    private void addSelectedItems() {
+        returnFoundItems(categoriesTable.getSelectionModel().getSelectedItems());
+    }
+
+    @FXML
+    private void addAllItems() {
+        returnFoundItems(categories);
+    }
+
+    private void returnFoundItems(List<SellerCategory> selectedCategories) {
+        List<String> itemsIds = new ArrayList<>();
+        for (SellerCategory category : selectedCategories) {
+            List<String> categoryItemsIds = category.getSellerItems().stream()
+                    .map(SellerItem::getId)
+                    .collect(Collectors.toList());
+            itemsIds.addAll(categoryItemsIds);
+        }
+        ((Stage) categoriesTable.getScene().getWindow()).close();
+        if (itemsInputCallback != null) itemsInputCallback.onItemsIdsReceived(itemsIds);
+    }
+
     private void log(String message) {
         if (logger != null) logger.log(message);
     }
@@ -93,46 +117,12 @@ public class ItemsInputController implements Initializable, SellerItemsSeeker.Se
         this.logger = logger;
     }
 
-    public interface ItemsInputCallback {
-        void onItemsIdsEntered(List<String> itemsIds);
+    public void setItemsInputCallback(ItemsInputCallback itemsInputCallback) {
+        this.itemsInputCallback = itemsInputCallback;
     }
 
-/*    static class SellerCategory {
-        private final String name;
+    public interface ItemsInputCallback {
+        void onItemsIdsReceived(List<String> itemsIds);
+    }
 
-        private final List<SellerItem> sellerItems = new ArrayList<>();
-
-        public SellerCategory(String name) {
-            this.name = name;
-        }
-
-        public void addSellerItem(SellerItem sellerItem) {
-            sellerItems.add(sellerItem);
-        }
-
-        public Integer getItemsCount() {
-            return sellerItems.size();
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public List<SellerItem> getSellerItems() {
-            return sellerItems;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            SellerCategory that = (SellerCategory) o;
-            return Objects.equals(name, that.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name);
-        }
-    }*/
 }

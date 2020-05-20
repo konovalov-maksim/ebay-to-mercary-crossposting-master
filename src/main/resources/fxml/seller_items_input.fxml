@@ -5,18 +5,22 @@
 
 <VBox xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gui.ItemsInputController"
-            prefHeight="400.0" prefWidth="600.0">
-    <HBox spacing="10">
+            fx:controller="gui.SellerItemsInputController"
+            prefHeight="400.0" prefWidth="600.0" styleClass="padding-pane" spacing="10">
+    <HBox spacing="10" alignment="CENTER_LEFT">
         <Label text="Seller name:"/>
         <TextField fx:id="sellerNameTf"/>
         <Button text="Find items" onAction="#findItems"/>
+        <ProgressBar fx:id="progressBar"/>
     </HBox>
-    <TableView fx:id="categoriesTable">
+    <TableView fx:id="categoriesTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="categoryNameCol" text="Category"/>
             <TableColumn fx:id="itemsCountCol" text="Items"/>
         </columns>
     </TableView>
-
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="Add selected" onAction="#addSelectedItems"/>
+        <Button text="Add all" onAction="#addAllItems"/>
+    </HBox>
 </VBox>
