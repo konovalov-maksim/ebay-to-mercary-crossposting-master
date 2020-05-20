@@ -27,7 +27,7 @@ public class ItemsLoader implements Runnable {
     private List<Item> items = new ArrayList<>();
     private LoadingListener loadingListener;
 
-    private OkHttpClient client = new OkHttpClient.Builder()
+    private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .build();
     private Path path;
@@ -155,10 +155,6 @@ public class ItemsLoader implements Runnable {
 
     public void setImagesDirPath(Path path) {
         this.path = path;
-    }
-
-    public LoadingListener getLoadingListener() {
-        return loadingListener;
     }
 
     public void setLoadingListener(LoadingListener loadingListener) {
