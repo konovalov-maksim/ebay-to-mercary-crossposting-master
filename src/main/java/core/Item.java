@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 public class Item {
 
+    private final static int TITLE_LIMIT = 40;
+
     private String id;
     private String title;
     private String description;
@@ -33,7 +35,7 @@ public class Item {
     }
 
     public boolean isValid() {
-        if (title == null || title.length() == 0 || title.length() > 40 ) return false;
+        if (title == null || title.length() == 0 || title.length() > TITLE_LIMIT ) return false;
         if (description == null || description.length() == 0 || description.length() > 1000 ) return false;
         if (getFinalPrice() < 5) return false;
         if (images == null || images.isEmpty() || images.size() > 12) return false;
@@ -44,6 +46,16 @@ public class Item {
 
     public Integer getFinalPrice() {
         return getPrice() + getShippingPrice();
+    }
+
+    public void trimTitle(){
+        if (title.length() <= TITLE_LIMIT) return;
+        for (int i = TITLE_LIMIT; i > 0; i--) {
+            if (title.charAt(i) == ' ') {
+                title = title.substring(0, i);
+                return;
+            }
+        }
     }
 
     @Override

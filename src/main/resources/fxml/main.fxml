@@ -52,7 +52,7 @@
                     </VBox>
                     <VBox spacing="5" minWidth="200" prefWidth="250">
                         <Label text="Category:"/>
-                        <TreeView fx:id="categoriesTv"/>
+                        <TreeView fx:id="categoriesTv" VBox.vgrow="ALWAYS"/>
                     </VBox>
                 </SplitPane>
                 <Button onAction="#applyParams" text="Apply" minWidth="150"/>
@@ -87,6 +87,10 @@
                     <TableColumn fx:id="isUploadedCol" text="Uploaded"/>
                 </columns>
             </TableView>
+            <HBox spacing="5" alignment="CENTER_LEFT">
+                <Button text="Select all" onAction="#selectAllItems"/>
+                <Button text="Trim titles" onAction="#trimTitles"/>
+            </HBox>
         </VBox>
     </VBox>
     <TextArea fx:id="consoleTa" editable="false" styleClass="console"/>
