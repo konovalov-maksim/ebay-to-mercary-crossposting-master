@@ -63,6 +63,7 @@
                 <Button text="Add items by ID" onAction="#addItemsById"/>
                 <Button text="Add items by seller" onAction="#addItemsBySeller"/>
                 <Button text="Upload items to Mercari" onAction="#doChecks"/>
+                <Button text="Select all" onAction="#selectAllItems"/>
                 <Button text="Clear list" onAction="#clearItems"/>
                 <Button text="Log in to Mercari" onAction="#openLoginDialog"/>
                 <Label text="ZIP code:"/>
@@ -87,10 +88,6 @@
                     <TableColumn fx:id="isUploadedCol" text="Uploaded"/>
                 </columns>
             </TableView>
-            <HBox spacing="5" alignment="CENTER_LEFT">
-                <Button text="Select all" onAction="#selectAllItems"/>
-                <Button text="Trim titles" onAction="#trimTitles"/>
-            </HBox>
         </VBox>
     </VBox>
     <TextArea fx:id="consoleTa" editable="false" styleClass="console"/>

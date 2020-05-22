@@ -377,12 +377,6 @@ public class MainController implements
     }
 
     @FXML
-    private void trimTitles() {
-        table.getSelectionModel().getSelectedItems().forEach(Item::trimTitle);
-        table.refresh();
-    }
-
-    @FXML
     private void selectAllItems() {
         if (table.getItems().isEmpty()) return;
         table.getSelectionModel().selectRange(0, table.getItems().size());

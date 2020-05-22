@@ -17,10 +17,18 @@ public class TableContextMenu extends ContextMenu {
 
         table.getSelectionModel().setCellSelectionEnabled(false);
 
-        //Remove Item"
+        //Remove Item
         MenuItem removeItem = new MenuItem("Remove item");
         removeItem.setOnAction(a -> table.getItems().removeAll(table.getSelectionModel().getSelectedItems()));
         removeItem.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+
+        //Trim title
+        MenuItem trimTitleItem = new MenuItem("Trim title");
+        trimTitleItem.setOnAction(a -> {
+            table.getSelectionModel().getSelectedItems().forEach(Item::trimTitle);
+            table.refresh();
+        });
+        trimTitleItem.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
 
         //Show on Ebay
         MenuItem showOnEbayItem = new MenuItem("Show on Ebay");
@@ -39,7 +47,7 @@ public class TableContextMenu extends ContextMenu {
         showOnMercariItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
 
-        this.getItems().addAll(removeItem, showOnEbayItem, showOnMercariItem);
+        this.getItems().addAll(removeItem, trimTitleItem, showOnEbayItem, showOnMercariItem);
 
         //Делаем меню видимым только для непустых строк таблицы
         table.setRowFactory(c -> {
