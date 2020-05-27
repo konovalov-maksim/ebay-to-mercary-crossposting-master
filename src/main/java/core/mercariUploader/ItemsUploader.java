@@ -28,6 +28,7 @@ public class ItemsUploader implements Runnable{
     private UploadingListener uploadingListener;
     private ImagesUploader imagesUploader;
     private String zipCode;
+    private long uploadingDelay = 0L;
 
     public ItemsUploader() {
         initClient();
@@ -59,7 +60,8 @@ public class ItemsUploader implements Runnable{
                 System.out.println(responseBody);
                 extractResult(responseBody, item);
                 uploadingListener.onItemUploaded(item);
-            } catch (IOException e) {
+                Thread.sleep(uploadingDelay);
+            } catch (Exception e) {
                 e.printStackTrace();
                 log(item + " - uploading failed: " + e.getMessage());
                 item.setStatus("Uploading error");
@@ -191,6 +193,14 @@ public class ItemsUploader implements Runnable{
     public void setLogger(Logger logger) {
         this.logger = logger;
         imagesUploader.setLogger(logger);
+    }
+
+    public long getUploadingDelay() {
+        return uploadingDelay;
+    }
+
+    public void setUploadingDelay(long uploadingDelay) {
+        this.uploadingDelay = uploadingDelay;
     }
 
     public UploadingListener getUploadingListener() {

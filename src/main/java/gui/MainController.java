@@ -62,6 +62,7 @@ public class MainController implements
     @FXML private TreeView<Category> categoriesTv;
 
     @FXML private TextField zipCodeTf;
+    @FXML private TextField uploadingDelayTf;
 
     @FXML private TableView<Item> table;
     @FXML private TextArea consoleTa;
@@ -95,6 +96,8 @@ public class MainController implements
         try {
             settings = dataManager.loadSettings();
             zipCodeTf.setText(settings.getZipCode());
+            String uploadingDelayStr = String.valueOf(settings.getUploadingDelay() != null ? settings.getUploadingDelay() : 500);
+            uploadingDelayTf.setText(uploadingDelayStr);
         } catch (IOException e) {
             e.printStackTrace();
             log("Default settings not found");
@@ -165,7 +168,7 @@ public class MainController implements
     }
 
     @FXML
-    private void doChecks() {
+    private void startUploading() {
         if (items.isEmpty()) {
             showAlert("No items for uploading", Alert.AlertType.ERROR);
             return;
@@ -173,20 +176,38 @@ public class MainController implements
         if (items.stream().anyMatch(c -> !c.isValid())) {
             Optional result = showAlert("Parameters of some items are not completely filled. Continue anyway?",
                     Alert.AlertType.WARNING);
-            if (!result.isPresent() || result.get().equals(ButtonType.CANCEL))
-                return;
-        }
-        if (zipCodeTf.getText() == null || zipCodeTf.getText().isEmpty()) {
-            showAlert("Zip code not specified!", Alert.AlertType.ERROR);
-            return;
+            if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) return;
         }
         try {
+            saveSettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(e.getMessage(), Alert.AlertType.ERROR);
+            return;
+        }
+        uploadItems();
+    }
+
+    private void saveSettings() {
+        try {
+            Integer.parseInt(zipCodeTf.getText());
             settings.setZipCode(zipCodeTf.getText());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Incorrect ZIP code!");
+        }
+        try {
+            long uploadingDelay = Long.parseLong(uploadingDelayTf.getText());
+            if (uploadingDelay < 0) throw new IllegalArgumentException();
+            settings.setUploadingDelay(uploadingDelay);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Incorrect uploading delay");
+        }
+        try {
             dataManager.saveSettings(settings);
         } catch (Exception e) {
             e.printStackTrace();
+            log("Failed to save settings");
         }
-        uploadItems();
     }
 
     private void uploadItems() {
@@ -201,6 +222,7 @@ public class MainController implements
         }
         uploader.setItems(items);
         uploader.setZipCode(settings.getZipCode());
+        uploader.setUploadingDelay(settings.getUploadingDelay());
         log("Items uploading started");
         new Thread(uploader).start();
     }

@@ -1,4 +1,5 @@
 {
   "ebayToken": "MaksimKo-MercariC-PRD-f7a91dadd-53db7110",
-  "zipCode": "12345"
+  "zipCode": "12345",
+  "uploadingDelay": 100
 }

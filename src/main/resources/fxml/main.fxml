@@ -62,12 +62,14 @@
             <HBox spacing="5" alignment="CENTER_LEFT">
                 <Button text="Add items by ID" onAction="#addItemsById"/>
                 <Button text="Add items by seller" onAction="#addItemsBySeller"/>
-                <Button text="Upload items to Mercari" onAction="#doChecks"/>
+                <Button text="Upload items to Mercari" onAction="#startUploading"/>
                 <Button text="Select all" onAction="#selectAllItems"/>
                 <Button text="Clear list" onAction="#clearItems"/>
                 <Button text="Log in to Mercari" onAction="#openLoginDialog"/>
                 <Label text="ZIP code:"/>
-                <TextField fx:id="zipCodeTf"/>
+                <TextField fx:id="zipCodeTf" maxWidth="60"/>
+                <Label text="Uploading delay, ms:"/>
+                <TextField fx:id="uploadingDelayTf" maxWidth="60"/>
             </HBox>
             <TableView fx:id="table" VBox.vgrow="ALWAYS">
                 <columns>

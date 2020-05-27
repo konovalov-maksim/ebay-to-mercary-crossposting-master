@@ -11,6 +11,9 @@ public class Settings {
     @SerializedName("zipCode")
     @Expose
     private String zipCode;
+    @SerializedName("uploadingDelay")
+    @Expose
+    private Long uploadingDelay;
 
     public String getEbayToken() {
         return ebayToken;
@@ -28,4 +31,11 @@ public class Settings {
         this.zipCode = zipCode;
     }
 
+    public Long getUploadingDelay() {
+        return uploadingDelay;
+    }
+
+    public void setUploadingDelay(Long uploadingDelay) {
+        this.uploadingDelay = uploadingDelay;
+    }
 }
