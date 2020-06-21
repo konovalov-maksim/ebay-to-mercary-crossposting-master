@@ -15,7 +15,7 @@ Ebay to Mercari Crossposting Master is a tool that allows you to mass crosspost 
 
 ![Screenshot_1](https://user-images.githubusercontent.com/49783652/79685715-77a5dd80-8243-11ea-9643-a6b85c073c0c.png)
 
-##### v1.1 new features:
+#### v1.1 new features:
 - Loading items by seller name
 - Shipping price setting
 - Shipping price loading from Ebay
